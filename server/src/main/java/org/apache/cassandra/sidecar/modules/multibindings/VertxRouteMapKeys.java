@@ -234,6 +234,226 @@ public interface VertxRouteMapKeys
         HttpMethod HTTP_METHOD = HttpMethod.GET;
         String ROUTE_URI = ApiEndpointsV1.SNAPSHOTS_ROUTE;
     }
+    interface ManagementCheckClusterConsistencyRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_PROBES_CLUSTER_ROUTE;
+    }
+    interface ManagementGetExecutorJobRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_EXECUTOR_JOB_ROUTE;
+    }
+    interface ManagementEndpointStatesRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_METADATA_ENDPOINT_STATES_ROUTE;
+    }
+    interface ManagementLocalDataCenterRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_METADATA_LOCAL_DC_ROUTE;
+    }
+    interface ManagementReleaseVersionRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_METADATA_RELEASE_VERSION_ROUTE;
+    }
+    interface ManagementReloadSeedsRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_RELOAD_SEEDS_ROUTE;
+    }
+    interface ManagementCreateRoleRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_AUTH_ROLE_ROUTE;
+    }
+    interface ManagementDropRoleRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.DELETE;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_AUTH_ROLE_ROUTE;
+    }
+    interface ManagementListRolesRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_AUTH_ROLE_ROUTE;
+    }
+    interface ManagementListKeyspacesRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_KEYSPACE_ROUTE;
+    }
+    interface ManagementGetKeyspaceReplicationRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_KEYSPACE_REPLICATION_ROUTE;
+    }
+    interface ManagementCleanupKeyspaceRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_KEYSPACE_CLEANUP_ROUTE;
+    }
+    interface ManagementRefreshKeyspaceRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_KEYSPACE_REFRESH_ROUTE;
+    }
+    interface ManagementCreateKeyspaceRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_KEYSPACE_CREATE_ROUTE;
+    }
+    interface ManagementAlterKeyspaceRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_KEYSPACE_ALTER_ROUTE;
+    }
+    interface ManagementListTablesRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_TABLES_ROUTE;
+    }
+    interface ManagementCreateTableRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_TABLES_CREATE_ROUTE;
+    }
+    interface ManagementListCompactionsRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_TABLES_COMPACTIONS_ROUTE;
+    }
+    interface ManagementScrubTablesRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_TABLES_SCRUB_ROUTE;
+    }
+    interface ManagementUpgradeSstablesRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_TABLES_UPGRADE_ROUTE;
+    }
+    interface ManagementCompactTablesRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_TABLES_COMPACT_ROUTE;
+    }
+    interface ManagementGarbageCollectTablesRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_TABLES_GARBAGECOLLECT_ROUTE;
+    }
+    interface ManagementFlushTablesRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_TABLES_FLUSH_ROUTE;
+    }
+    interface ManagementSetNodeCompactionThroughputRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_COMPACTION_ROUTE;
+    }
+    interface ManagementDecommissionNodeRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_DECOMMISSION_ROUTE;
+    }
+    interface ManagementRebuildNodeRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_REBUILD_ROUTE;
+    }
+    interface ManagementDrainNodeRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_DRAIN_ROUTE;
+    }
+    interface ManagementMoveNodeRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_MOVE_ROUTE;
+    }
+    interface ManagementAssassinateNodeRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_ASSASSINATE_ROUTE;
+    }
+    interface ManagementSetNodeLoggingLevelRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_LOGGING_ROUTE;
+    }
+    interface ManagementResetLocalSchemaRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_SCHEMA_RESET_ROUTE;
+    }
+    interface ManagementReloadLocalSchemaRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_SCHEMA_RELOAD_ROUTE;
+    }
+    interface ManagementSchemaVersionsRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_SCHEMA_VERSIONS_ROUTE;
+    }
+    interface ManagementStreamInfoRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_STREAMINFO_ROUTE;
+    }
+    interface ManagementListNodeSnapshotsRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_SNAPSHOTS_ROUTE;
+    }
+    interface ManagementTakeNodeSnapshotRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_SNAPSHOTS_ROUTE;
+    }
+    interface ManagementClearNodeSnapshotsRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.DELETE;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_SNAPSHOTS_ROUTE;
+    }
+    interface ManagementNodeRepairRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_REPAIR_ROUTE;
+    }
+    interface ManagementSetFullQueryLoggingRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_FULLQUERYLOGGING_ROUTE;
+    }
+    interface ManagementGetFullQueryLoggingRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_FULLQUERYLOGGING_ROUTE;
+    }
+    interface ManagementTruncateHintsRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.POST;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_OPS_NODE_TRUNCATE_HINTS_ROUTE;
+    }
+    interface ManagementRangeToEndpointRouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.GET;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_TOKENS_RANGE_TO_ENDPOINT_ROUTE;
+    }
+    interface ManagementRepairsV2RouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.PUT;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_REPAIRS_ROUTE;
+    }
+    interface ManagementCancelRepairsV2RouteKey extends RouteClassKey
+    {
+        HttpMethod HTTP_METHOD = HttpMethod.DELETE;
+        String ROUTE_URI = ApiEndpointsV1.MANAGEMENT_REPAIRS_ROUTE;
+    }
     interface OpenApiJsonRouteKey extends RouteClassKey
     {
         HttpMethod HTTP_METHOD = HttpMethod.GET;

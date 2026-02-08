@@ -184,6 +184,49 @@ public final class ApiEndpointsV1
     private static final String SYSTEM_API_PREFIX = API_V1 + "/system";
     public static final String SYSTEM_DISK_INFO_ROUTE = SYSTEM_API_PREFIX + "/disk-info";
 
+    // Management API integration routes (ported from management-api)
+    public static final String MANAGEMENT_API_V0_PREFIX = API_V1 + "/management/v0";
+    public static final String MANAGEMENT_METADATA_RELEASE_VERSION_ROUTE = MANAGEMENT_API_V0_PREFIX + "/metadata/versions/release";
+    public static final String MANAGEMENT_METADATA_ENDPOINT_STATES_ROUTE = MANAGEMENT_API_V0_PREFIX + "/metadata/endpoints";
+    public static final String MANAGEMENT_METADATA_LOCAL_DC_ROUTE = MANAGEMENT_API_V0_PREFIX + "/metadata/localdc";
+    public static final String MANAGEMENT_OPS_RELOAD_SEEDS_ROUTE = MANAGEMENT_API_V0_PREFIX + "/ops/seeds/reload";
+    public static final String MANAGEMENT_PROBES_CLUSTER_ROUTE = MANAGEMENT_API_V0_PREFIX + "/probes/cluster";
+    public static final String MANAGEMENT_OPS_EXECUTOR_JOB_ROUTE = MANAGEMENT_API_V0_PREFIX + "/ops/executor/job";
+    public static final String MANAGEMENT_OPS_AUTH_ROLE_ROUTE = MANAGEMENT_API_V0_PREFIX + "/ops/auth/role";
+    public static final String MANAGEMENT_OPS_KEYSPACE_ROUTE = MANAGEMENT_API_V0_PREFIX + "/ops/keyspace";
+    public static final String MANAGEMENT_OPS_KEYSPACE_CLEANUP_ROUTE = MANAGEMENT_OPS_KEYSPACE_ROUTE + "/cleanup";
+    public static final String MANAGEMENT_OPS_KEYSPACE_REFRESH_ROUTE = MANAGEMENT_OPS_KEYSPACE_ROUTE + "/refresh";
+    public static final String MANAGEMENT_OPS_KEYSPACE_CREATE_ROUTE = MANAGEMENT_OPS_KEYSPACE_ROUTE + "/create";
+    public static final String MANAGEMENT_OPS_KEYSPACE_ALTER_ROUTE = MANAGEMENT_OPS_KEYSPACE_ROUTE + "/alter";
+    public static final String MANAGEMENT_OPS_KEYSPACE_REPLICATION_ROUTE = MANAGEMENT_OPS_KEYSPACE_ROUTE + "/replication";
+    public static final String MANAGEMENT_OPS_TABLES_ROUTE = MANAGEMENT_API_V0_PREFIX + "/ops/tables";
+    public static final String MANAGEMENT_OPS_TABLES_CREATE_ROUTE = MANAGEMENT_OPS_TABLES_ROUTE + "/create";
+    public static final String MANAGEMENT_OPS_TABLES_COMPACTIONS_ROUTE = MANAGEMENT_OPS_TABLES_ROUTE + "/compactions";
+    public static final String MANAGEMENT_OPS_TABLES_SCRUB_ROUTE = MANAGEMENT_OPS_TABLES_ROUTE + "/scrub";
+    public static final String MANAGEMENT_OPS_TABLES_UPGRADE_ROUTE = MANAGEMENT_OPS_TABLES_ROUTE + "/sstables/upgrade";
+    public static final String MANAGEMENT_OPS_TABLES_COMPACT_ROUTE = MANAGEMENT_OPS_TABLES_ROUTE + "/compact";
+    public static final String MANAGEMENT_OPS_TABLES_GARBAGECOLLECT_ROUTE = MANAGEMENT_OPS_TABLES_ROUTE + "/garbagecollect";
+    public static final String MANAGEMENT_OPS_TABLES_FLUSH_ROUTE = MANAGEMENT_OPS_TABLES_ROUTE + "/flush";
+    public static final String MANAGEMENT_OPS_NODE_ROUTE = MANAGEMENT_API_V0_PREFIX + "/ops/node";
+    public static final String MANAGEMENT_OPS_NODE_COMPACTION_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/compaction";
+    public static final String MANAGEMENT_OPS_NODE_DECOMMISSION_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/decommission";
+    public static final String MANAGEMENT_OPS_NODE_REBUILD_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/rebuild";
+    public static final String MANAGEMENT_OPS_NODE_DRAIN_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/drain";
+    public static final String MANAGEMENT_OPS_NODE_MOVE_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/move";
+    public static final String MANAGEMENT_OPS_NODE_ASSASSINATE_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/assassinate";
+    public static final String MANAGEMENT_OPS_NODE_LOGGING_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/logging";
+    public static final String MANAGEMENT_OPS_NODE_SCHEMA_RESET_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/schema/reset";
+    public static final String MANAGEMENT_OPS_NODE_SCHEMA_RELOAD_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/schema/reload";
+    public static final String MANAGEMENT_OPS_NODE_SCHEMA_VERSIONS_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/schema/versions";
+    public static final String MANAGEMENT_OPS_NODE_STREAMINFO_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/streaminfo";
+    public static final String MANAGEMENT_OPS_NODE_SNAPSHOTS_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/snapshots";
+    public static final String MANAGEMENT_OPS_NODE_REPAIR_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/repair";
+    public static final String MANAGEMENT_OPS_NODE_FULLQUERYLOGGING_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/fullquerylogging";
+    public static final String MANAGEMENT_OPS_NODE_TRUNCATE_HINTS_ROUTE = MANAGEMENT_OPS_NODE_ROUTE + "/hints/truncate";
+    public static final String MANAGEMENT_TOKENS_ROUTE = MANAGEMENT_API_V0_PREFIX + "/tokens";
+    public static final String MANAGEMENT_TOKENS_RANGE_TO_ENDPOINT_ROUTE = MANAGEMENT_TOKENS_ROUTE + "/rangetoendpoint";
+    public static final String MANAGEMENT_REPAIRS_ROUTE = MANAGEMENT_API_V0_PREFIX + "/repairs";
+
     private ApiEndpointsV1()
     {
         throw new IllegalStateException(getClass() + " is a constants container and shall not be instantiated");

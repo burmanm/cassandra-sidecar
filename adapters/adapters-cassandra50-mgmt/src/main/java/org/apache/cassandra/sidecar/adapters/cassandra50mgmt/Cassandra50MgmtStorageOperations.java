@@ -52,6 +52,18 @@ class Cassandra50MgmtStorageOperations extends Cassandra50StorageOperations
     }
 
     @Override
+    public void decommission(boolean force)
+    {
+        nodeOpsExecutor.executePrepared("CALL NodeOps.decommission(?, ?)", force, false);
+    }
+
+    @Override
+    public void drain()
+    {
+        nodeOpsExecutor.executeLocal("CALL NodeOps.drain()");
+    }
+
+    @Override
     public void setCompactionThroughputMbPerSec(int compactionThroughputMbPerSec)
     {
         nodeOpsExecutor.executePrepared("CALL NodeOps.setCompactionThroughput(?)", compactionThroughputMbPerSec);
@@ -154,5 +166,79 @@ class Cassandra50MgmtStorageOperations extends Cassandra50StorageOperations
     {
         Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.getReleaseVersion()").one();
         return row == null ? null : row.getString(0);
+    }
+
+    @Override
+    public String nodeOpsRepair(String keyspace, List<String> tables, boolean full, boolean async)
+    {
+        return nodeOpsRepair(keyspace, tables, full, async, null, null, null, null);
+    }
+
+    @Override
+    public String nodeOpsRepair(String keyspace,
+                                List<String> tables,
+                                boolean full,
+                                boolean async,
+                                String parallelism,
+                                List<String> dataCenters,
+                                List<String> associatedTokens,
+                                Integer repairThreads)
+    {
+        Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.repair(?, ?, ?, ?, ?, ?, ?, ?)",
+                                                  keyspace,
+                                                  tables,
+                                                  full,
+                                                  async,
+                                                  parallelism,
+                                                  dataCenters,
+                                                  associatedTokens == null ? null : String.join(",", associatedTokens),
+                                                  repairThreads).one();
+        return row == null ? null : row.getString(0);
+    }
+
+    @Override
+    public String forceKeyspaceCleanup(int jobs, String keyspace, List<String> tables)
+    {
+        Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.forceKeyspaceCleanup(?, ?, ?, ?)",
+                                                  jobs,
+                                                  keyspace,
+                                                  tables,
+                                                  false).one();
+        return row == null ? null : row.getString(0);
+    }
+
+    @Override
+    public void takeSnapshot(String snapshotName,
+                             List<String> keyspaces,
+                             String tableName,
+                             boolean skipFlush,
+                             List<String> keyspaceTables)
+    {
+        nodeOpsExecutor.executePrepared("CALL NodeOps.takeSnapshot(?, ?, ?, ?, ?)",
+                                        snapshotName,
+                                        keyspaces,
+                                        tableName,
+                                        skipFlush,
+                                        keyspaceTables);
+    }
+
+    @Override
+    public void clearSnapshots(List<String> snapshotNames, List<String> keyspaces)
+    {
+        nodeOpsExecutor.executePrepared("CALL NodeOps.clearSnapshots(?, ?)", snapshotNames, keyspaces);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<String, String> getNodeOpsJobStatus(String jobId)
+    {
+        Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.getJobStatus(?)", jobId).one();
+        return row == null ? Collections.emptyMap() : (Map<String, String>) row.getObject(0);
+    }
+
+    @Override
+    public void move(String newToken)
+    {
+        nodeOpsExecutor.executePrepared("CALL NodeOps.move(?, ?)", newToken, false);
     }
 }

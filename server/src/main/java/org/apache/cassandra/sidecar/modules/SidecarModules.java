@@ -56,6 +56,7 @@ public class SidecarModules
                        new LiveMigrationModule(),
                        new MultiBindingTypeResolverModule(),
                        new OpenApiModule(),
+                       new ManagementApiModule(),
                        new RestoreJobModule(),
                        new SchedulingModule(),
                        new SchemaReportingModule(),

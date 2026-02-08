@@ -366,4 +366,98 @@ public interface StorageOperations
         throw new UnsupportedOperationException("getReleaseVersion is not supported by this adapter");
     }
 
+    /**
+     * Executes NodeOps repair operation.
+     *
+     * @param keyspace keyspace name
+     * @param tables optional table list
+     * @param full full repair flag
+     * @param async async repair flag
+     * @return optional operation id
+     */
+    default String nodeOpsRepair(@NotNull String keyspace,
+                                 @Nullable List<String> tables,
+                                 boolean full,
+                                 boolean async)
+    {
+        throw new UnsupportedOperationException("nodeOpsRepair is not supported by this adapter");
+    }
+
+    /**
+     * Executes NodeOps repair operation with advanced options.
+     *
+     * @param keyspace keyspace name
+     * @param tables optional table list
+     * @param full full repair flag
+     * @param async async repair flag
+     * @param parallelism optional parallelism name
+     * @param dataCenters optional datacenter filter
+     * @param associatedTokens optional token range strings (start:end)
+     * @param repairThreads optional thread count
+     * @return optional operation id
+     */
+    default String nodeOpsRepair(@NotNull String keyspace,
+                                 @Nullable List<String> tables,
+                                 boolean full,
+                                 boolean async,
+                                 @Nullable String parallelism,
+                                 @Nullable List<String> dataCenters,
+                                 @Nullable List<String> associatedTokens,
+                                 @Nullable Integer repairThreads)
+    {
+        throw new UnsupportedOperationException("nodeOpsRepair(advanced) is not supported by this adapter");
+    }
+
+    /**
+     * Executes NodeOps force keyspace cleanup.
+     *
+     * @param jobs concurrent jobs
+     * @param keyspace keyspace name
+     * @param tables optional table list
+     * @return optional operation id
+     */
+    default String forceKeyspaceCleanup(int jobs, @NotNull String keyspace, @Nullable List<String> tables)
+    {
+        throw new UnsupportedOperationException("forceKeyspaceCleanup is not supported by this adapter");
+    }
+
+    /**
+     * Takes a snapshot using NodeOps operation signature.
+     *
+     * @param snapshotName snapshot name
+     * @param keyspaces optional keyspaces
+     * @param tableName optional table name
+     * @param skipFlush skip flush flag
+     * @param keyspaceTables optional keyspace.table list
+     */
+    default void takeSnapshot(@NotNull String snapshotName,
+                              @Nullable List<String> keyspaces,
+                              @Nullable String tableName,
+                              boolean skipFlush,
+                              @Nullable List<String> keyspaceTables)
+    {
+        throw new UnsupportedOperationException("takeSnapshot(NodeOps) is not supported by this adapter");
+    }
+
+    /**
+     * Clears snapshots using NodeOps operation signature.
+     *
+     * @param snapshotNames optional snapshot names
+     * @param keyspaces optional keyspaces
+     */
+    default void clearSnapshots(@Nullable List<String> snapshotNames, @Nullable List<String> keyspaces)
+    {
+        throw new UnsupportedOperationException("clearSnapshots is not supported by this adapter");
+    }
+
+    /**
+     * Retrieves NodeOps job status by id.
+     *
+     * @param jobId job id
+     * @return job status map
+     */
+    default Map<String, String> getNodeOpsJobStatus(@NotNull String jobId)
+    {
+        throw new UnsupportedOperationException("getNodeOpsJobStatus is not supported by this adapter");
+    }
 }
