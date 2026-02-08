@@ -21,11 +21,17 @@ package org.apache.cassandra.sidecar.adapters.cassandra50mgmt;
 import java.net.InetSocketAddress;
 
 import org.apache.cassandra.sidecar.adapters.cassandra50.Cassandra50Adapter;
+import org.apache.cassandra.sidecar.common.server.AuthOperations;
 import org.apache.cassandra.sidecar.common.server.CQLSessionProvider;
+import org.apache.cassandra.sidecar.common.server.ClusterMembershipOperations;
+import org.apache.cassandra.sidecar.common.server.CompactionManagerOperations;
 import org.apache.cassandra.sidecar.common.server.JmxClient;
+import org.apache.cassandra.sidecar.common.server.StorageOperations;
+import org.apache.cassandra.sidecar.common.server.TableOperations;
 import org.apache.cassandra.sidecar.common.server.dns.DnsResolver;
 import org.apache.cassandra.sidecar.common.server.utils.DriverUtils;
 import org.apache.cassandra.sidecar.db.schema.TableSchemaFetcher;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Cassandra 5.0 adapter variant reserved for mgmt-api backed operations.
@@ -33,6 +39,7 @@ import org.apache.cassandra.sidecar.db.schema.TableSchemaFetcher;
 public class Cassandra50MgmtAdapter extends Cassandra50Adapter
 {
     private final UnixSocketCqlSessionProvider unixSocketCqlSessionProvider;
+    private final AuthOperations authOperations;
 
     public Cassandra50MgmtAdapter(DnsResolver dnsResolver,
                                   JmxClient jmxClient,
@@ -44,10 +51,59 @@ public class Cassandra50MgmtAdapter extends Cassandra50Adapter
     {
         super(dnsResolver, jmxClient, session, localNativeTransportAddress, driverUtils, tableSchemaFetcher);
         this.unixSocketCqlSessionProvider = new UnixSocketCqlSessionProvider(configuration);
+        this.authOperations = new Cassandra50MgmtAuthOperations(session, driverUtils, localNativeTransportAddress);
     }
 
     public UnixSocketCqlSessionProvider unixSocketCqlSessionProvider()
     {
         return unixSocketCqlSessionProvider;
+    }
+
+    @Override
+    @NotNull
+    protected StorageOperations createStorageOperations(DnsResolver dnsResolver, JmxClient jmxClient)
+    {
+        return new Cassandra50MgmtStorageOperations(jmxClient,
+                                                    dnsResolver,
+                                                    cqlSessionProvider,
+                                                    driverUtils,
+                                                    localNativeTransportAddress);
+    }
+
+    @Override
+    @NotNull
+    protected ClusterMembershipOperations createClusterMembershipOperations(JmxClient jmxClient)
+    {
+        return new Cassandra50MgmtClusterMembershipOperations(jmxClient,
+                                                              cqlSessionProvider,
+                                                              driverUtils,
+                                                              localNativeTransportAddress);
+    }
+
+    @Override
+    @NotNull
+    protected TableOperations createTableOperations(JmxClient jmxClient)
+    {
+        return new Cassandra50MgmtTableOperations(jmxClient,
+                                                  cqlSessionProvider,
+                                                  driverUtils,
+                                                  localNativeTransportAddress);
+    }
+
+    @Override
+    @NotNull
+    protected CompactionManagerOperations createCompactionManagerOperations(JmxClient jmxClient)
+    {
+        return new Cassandra50MgmtCompactionManagerOperations(jmxClient,
+                                                              cqlSessionProvider,
+                                                              driverUtils,
+                                                              localNativeTransportAddress);
+    }
+
+    @Override
+    @NotNull
+    public AuthOperations authOperations()
+    {
+        return authOperations;
     }
 }
