@@ -19,7 +19,9 @@
 package org.apache.cassandra.sidecar.utils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -82,34 +84,30 @@ public class CassandraVersionProvider
 
         if (candidates.isEmpty())
         {
-            LOGGER.warn("No adapters found for product '{}'. Falling back to product '{}'",
-                        product, AdapterProducts.CASSANDRA);
-            candidates = versions.stream()
-                                 .filter(factory -> factory.supportsProduct(AdapterProducts.CASSANDRA))
-                                 .collect(Collectors.toList());
+            throw new IllegalStateException("No adapters found for requested product '" + product + "'");
         }
 
-        if (candidates.isEmpty())
+        Optional<ICassandraFactory> selectedFactory = candidates.stream()
+                                                                .filter(factory -> !SimpleCassandraVersion.create(factory)
+                                                                                                          .isGreaterThan(requestedVersion))
+                                                                .max(Comparator.comparing(SimpleCassandraVersion::create));
+
+        if (!selectedFactory.isPresent())
         {
-            throw new IllegalStateException("No factories available for default product '" + AdapterProducts.CASSANDRA + "'");
+            String minimumVersions = candidates.stream()
+                                               .map(SimpleCassandraVersion::create)
+                                               .sorted()
+                                               .map(SimpleCassandraVersion::toString)
+                                               .collect(Collectors.joining(", "));
+            throw new IllegalStateException("No adapter available for product '" + product
+                                            + "' and Cassandra version '" + requestedVersion
+                                            + "'. Available minimum versions are: " + minimumVersions);
         }
 
-        ICassandraFactory result = candidates.get(0);
-
-        for (ICassandraFactory factory : candidates)
-        {
-            SimpleCassandraVersion currentMinVersion = SimpleCassandraVersion.create(result);
-            SimpleCassandraVersion nextVersion = SimpleCassandraVersion.create(factory);
-
-            // skip if we can rule this out early
-            if (nextVersion.isGreaterThan(requestedVersion)) continue;
-
-            if (requestedVersion.isGreaterThan(currentMinVersion))
-            {
-                result = factory;
-            }
-        }
-        return result;
+        ICassandraFactory factory = selectedFactory.get();
+        LOGGER.info("Selected adapter factory {} for product '{}' and Cassandra version '{}'",
+                    factory.getClass().getSimpleName(), product, requestedVersion);
+        return factory;
     }
 
     /**

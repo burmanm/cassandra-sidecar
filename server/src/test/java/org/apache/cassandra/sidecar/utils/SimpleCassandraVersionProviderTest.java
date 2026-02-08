@@ -18,15 +18,23 @@
 
 package org.apache.cassandra.sidecar.utils;
 
+import java.net.InetSocketAddress;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.apache.cassandra.sidecar.common.server.AdapterProducts;
+import org.apache.cassandra.sidecar.common.server.CQLSessionProvider;
 import org.apache.cassandra.sidecar.common.server.ICassandraFactory;
+import org.apache.cassandra.sidecar.common.server.JmxClient;
+import org.apache.cassandra.sidecar.common.server.MinimumVersion;
+import org.apache.cassandra.sidecar.common.server.Product;
 import org.apache.cassandra.sidecar.mocks.V30;
 import org.apache.cassandra.sidecar.mocks.V40;
 import org.apache.cassandra.sidecar.mocks.V41;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SimpleCassandraVersionProviderTest
 {
@@ -83,4 +91,52 @@ class SimpleCassandraVersionProviderTest
         assertThat(cassandra).hasSameClassAs(new V40());
     }
 
+    @Test
+    void selectsMgmtProductWhenRequested()
+    {
+        provider = new CassandraVersionProvider.Builder()
+                   .add(new V50Oss())
+                   .add(new V50Mgmt())
+                   .build();
+
+        ICassandraFactory cassandra = provider.cassandra(AdapterProducts.CASSANDRA_MGMT, "5.0.3");
+        assertThat(cassandra).hasSameClassAs(new V50Mgmt());
+    }
+
+    @Test
+    void failsForMgmtProductWhenVersionIsBelowSupportedMinimum()
+    {
+        provider = new CassandraVersionProvider.Builder()
+                   .add(new V50Mgmt())
+                   .build();
+
+        assertThatThrownBy(() -> provider.cassandra(AdapterProducts.CASSANDRA_MGMT, "4.1.9"))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("No adapter available for product 'cassandra-mgmt'");
+    }
+
+    @MinimumVersion("5.0.0")
+    private static class V50Oss implements ICassandraFactory
+    {
+        @Override
+        public org.apache.cassandra.sidecar.common.server.ICassandraAdapter create(CQLSessionProvider session,
+                                                                                    JmxClient jmxClient,
+                                                                                    InetSocketAddress localNativeTransportAddress)
+        {
+            return null;
+        }
+    }
+
+    @Product(AdapterProducts.CASSANDRA_MGMT)
+    @MinimumVersion("5.0.0")
+    private static class V50Mgmt implements ICassandraFactory
+    {
+        @Override
+        public org.apache.cassandra.sidecar.common.server.ICassandraAdapter create(CQLSessionProvider session,
+                                                                                    JmxClient jmxClient,
+                                                                                    InetSocketAddress localNativeTransportAddress)
+        {
+            return null;
+        }
+    }
 }

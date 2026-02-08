@@ -46,7 +46,7 @@ generateOpenApiSpec {
     outputDirectory = layout.buildDirectory.dir('resources/main/openapi')
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
 
 // add additional test source set
 sourceSets {
@@ -181,6 +181,7 @@ dependencies {
     implementation(project(":adapters:adapters-base"))
     implementation(project(":adapters:adapters-cassandra41"))
     implementation(project(":adapters:adapters-cassandra50"))
+    implementation(project(":adapters:adapters-cassandra50-mgmt"))
     implementation(project(":vertx-auth-mtls"))
     implementation(project(":vertx-client"))
 
@@ -277,4 +278,3 @@ check.dependsOn containerTest, integrationTest, jacocoTestReport
 
 // Ensure the OpenAPI spec is generated before building the JAR
 processResources.dependsOn generateOpenApiSpec
-
