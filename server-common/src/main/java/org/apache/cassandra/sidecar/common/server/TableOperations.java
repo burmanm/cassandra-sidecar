@@ -20,6 +20,7 @@ package org.apache.cassandra.sidecar.common.server;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -64,4 +65,115 @@ public interface TableOperations
      * @throws IOException when an error occurs reading the data paths
      */
     List<String> getDataPaths(@NotNull String keyspace, @NotNull String table) throws IOException;
+
+    /**
+     * Loads newly created SSTables into Cassandra.
+     *
+     * @param keyspace keyspace name
+     * @param table table name
+     */
+    default void loadNewSSTables(@NotNull String keyspace, @NotNull String table)
+    {
+        throw new UnsupportedOperationException("loadNewSSTables is not supported by this adapter");
+    }
+
+    /**
+     * Triggers scrub.
+     */
+    default void scrub(boolean disableSnapshot,
+                       boolean skipCorrupted,
+                       boolean checkData,
+                       boolean reinsertOverflowedTtl,
+                       int jobs,
+                       @NotNull String keyspace,
+                       @NotNull List<String> tables)
+    {
+        throw new UnsupportedOperationException("scrub is not supported by this adapter");
+    }
+
+    /**
+     * Triggers SSTable upgrade.
+     */
+    default void upgradeSSTables(@NotNull String keyspace,
+                                 @NotNull List<String> tables,
+                                 boolean includeCurrentVersion,
+                                 int jobs)
+    {
+        throw new UnsupportedOperationException("upgradeSSTables is not supported by this adapter");
+    }
+
+    /**
+     * Triggers garbage collection.
+     */
+    default void garbageCollect(@NotNull String tombstoneOption,
+                                int jobs,
+                                @NotNull String keyspace,
+                                @NotNull List<String> tables)
+    {
+        throw new UnsupportedOperationException("garbageCollect is not supported by this adapter");
+    }
+
+    /**
+     * Triggers flush for keyspace tables.
+     */
+    default void forceKeyspaceFlush(@NotNull String keyspace, @NotNull List<String> tables)
+    {
+        throw new UnsupportedOperationException("forceKeyspaceFlush is not supported by this adapter");
+    }
+
+    /**
+     * Triggers compaction for keyspace tables.
+     */
+    default void forceKeyspaceCompaction(boolean splitOutput, @NotNull String keyspace, @NotNull List<String> tables)
+    {
+        throw new UnsupportedOperationException("forceKeyspaceCompaction is not supported by this adapter");
+    }
+
+    /**
+     * Triggers compaction for token range in keyspace tables.
+     */
+    default void forceKeyspaceCompactionForTokenRange(@NotNull String keyspace,
+                                                      @NotNull String startToken,
+                                                      @NotNull String endToken,
+                                                      @NotNull List<String> tables)
+    {
+        throw new UnsupportedOperationException("forceKeyspaceCompactionForTokenRange is not supported by this adapter");
+    }
+
+    /**
+     * Lists table names in keyspace.
+     *
+     * @param keyspace keyspace name
+     * @return table names
+     */
+    default List<String> getTables(@NotNull String keyspace)
+    {
+        throw new UnsupportedOperationException("getTables is not supported by this adapter");
+    }
+
+    /**
+     * Creates a table.
+     *
+     * @param keyspace keyspace name
+     * @param table table name
+     * @param columnsAndTypes column to CQL type map
+     * @param partitionKeyColumns partition key columns
+     * @param clusteringColumns clustering columns
+     * @param clusteringOrders clustering order map
+     * @param staticColumns static columns
+     * @param simpleOptions simple table options
+     * @param complexOptions complex table options
+     */
+    default void createTable(@NotNull String keyspace,
+                             @NotNull String table,
+                             @NotNull Map<String, String> columnsAndTypes,
+                             @NotNull List<String> partitionKeyColumns,
+                             @NotNull List<String> clusteringColumns,
+                             @NotNull Map<String, String> clusteringOrders,
+                             @NotNull List<String> staticColumns,
+                             @NotNull Map<String, String> simpleOptions,
+                             @NotNull Map<String, Map<String, String>> complexOptions)
+    {
+        throw new UnsupportedOperationException("createTable is not supported by this adapter");
+    }
 }

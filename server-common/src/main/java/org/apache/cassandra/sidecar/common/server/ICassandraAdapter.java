@@ -132,4 +132,14 @@ public interface ICassandraAdapter
      * @throws CassandraUnavailableException when Cassandra is not available
      */
     @NotNull CompactionStatsOperations compactionStatsOperations() throws CassandraUnavailableException;
+
+    /**
+     * @return the {@link AuthOperations} implementation for the Cassandra cluster
+     * @throws CassandraUnavailableException when Cassandra is not available
+     */
+    @NotNull
+    default AuthOperations authOperations() throws CassandraUnavailableException
+    {
+        throw new UnsupportedOperationException("Auth operations are not provided by this adapter");
+    }
 }

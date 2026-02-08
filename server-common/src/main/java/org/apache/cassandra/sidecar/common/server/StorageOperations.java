@@ -204,4 +204,166 @@ public interface StorageOperations
      * @param newToken the new token for the node to move to
      */
     void move(String newToken) throws IOException;
+
+    /**
+     * Triggers a rebuild operation.
+     *
+     * @param sourceDatacenter source datacenter name, or null for all datacenters
+     */
+    default void rebuild(@Nullable String sourceDatacenter)
+    {
+        throw new UnsupportedOperationException("rebuild is not supported by this adapter");
+    }
+
+    /**
+     * Sets compaction throughput in MiB/s.
+     *
+     * @param compactionThroughputMbPerSec compaction throughput in MiB/s
+     */
+    default void setCompactionThroughputMbPerSec(int compactionThroughputMbPerSec)
+    {
+        throw new UnsupportedOperationException("setCompactionThroughputMbPerSec is not supported by this adapter");
+    }
+
+    /**
+     * Sets logging level for a class or package target.
+     *
+     * @param target   class/package target
+     * @param rawLevel logging level
+     */
+    default void setLoggingLevel(@Nullable String target, @Nullable String rawLevel)
+    {
+        throw new UnsupportedOperationException("setLoggingLevel is not supported by this adapter");
+    }
+
+    /**
+     * Resets and synchronizes local schema.
+     */
+    default void resetLocalSchema()
+    {
+        throw new UnsupportedOperationException("resetLocalSchema is not supported by this adapter");
+    }
+
+    /**
+     * Reloads local schema from system tables.
+     */
+    default void reloadLocalSchema()
+    {
+        throw new UnsupportedOperationException("reloadLocalSchema is not supported by this adapter");
+    }
+
+    /**
+     * Terminates all active repair sessions.
+     */
+    default void forceTerminateAllRepairSessions()
+    {
+        throw new UnsupportedOperationException("forceTerminateAllRepairSessions is not supported by this adapter");
+    }
+
+    /**
+     * Enables or disables full query logging.
+     *
+     * @param enabled true to enable, false to disable
+     */
+    default void setFullQueryLogEnabled(boolean enabled)
+    {
+        throw new UnsupportedOperationException("setFullQueryLogEnabled is not supported by this adapter");
+    }
+
+    /**
+     * @return true if full query logging is enabled
+     */
+    default boolean isFullQueryLogEnabled()
+    {
+        throw new UnsupportedOperationException("isFullQueryLogEnabled is not supported by this adapter");
+    }
+
+    /**
+     * Reloads internode encryption truststore.
+     */
+    default void reloadInternodeEncryptionTruststore()
+    {
+        throw new UnsupportedOperationException("reloadInternodeEncryptionTruststore is not supported by this adapter");
+    }
+
+    /**
+     * @return keyspaces visible to local node
+     */
+    default List<String> getKeyspaces()
+    {
+        throw new UnsupportedOperationException("getKeyspaces is not supported by this adapter");
+    }
+
+    /**
+     * Gets replication settings for a keyspace.
+     *
+     * @param keyspace keyspace name
+     * @return replication settings map
+     */
+    default Map<String, String> getReplication(@NotNull String keyspace)
+    {
+        throw new UnsupportedOperationException("getReplication is not supported by this adapter");
+    }
+
+    /**
+     * Creates keyspace.
+     *
+     * @param keyspace keyspace name
+     * @param replicationSettings replication settings map
+     */
+    default void createKeyspace(@NotNull String keyspace, @NotNull Map<String, String> replicationSettings)
+    {
+        throw new UnsupportedOperationException("createKeyspace is not supported by this adapter");
+    }
+
+    /**
+     * Alters keyspace replication settings.
+     *
+     * @param keyspace keyspace name
+     * @param replicationSettings replication settings map
+     */
+    default void alterKeyspace(@NotNull String keyspace, @NotNull Map<String, String> replicationSettings)
+    {
+        throw new UnsupportedOperationException("alterKeyspace is not supported by this adapter");
+    }
+
+    /**
+     * Gets snapshot details.
+     *
+     * @param snapshotNames optional snapshot names filter
+     * @param keyspaces optional keyspace filter
+     * @return snapshot details payload
+     */
+    default Object getSnapshotDetails(@Nullable List<String> snapshotNames, @Nullable List<String> keyspaces)
+    {
+        throw new UnsupportedOperationException("getSnapshotDetails is not supported by this adapter");
+    }
+
+    /**
+     * Gets token range to endpoint mapping.
+     *
+     * @param keyspaceName optional keyspace filter
+     * @return map of token ranges to endpoints
+     */
+    default Map<List<String>, List<String>> getRangeToEndpointMap(@Nullable String keyspaceName)
+    {
+        throw new UnsupportedOperationException("getRangeToEndpointMap is not supported by this adapter");
+    }
+
+    /**
+     * @return schema versions mapped to endpoints
+     */
+    default Map<String, List<String>> getSchemaVersions()
+    {
+        throw new UnsupportedOperationException("getSchemaVersions is not supported by this adapter");
+    }
+
+    /**
+     * @return Cassandra release version
+     */
+    default String getReleaseVersion()
+    {
+        throw new UnsupportedOperationException("getReleaseVersion is not supported by this adapter");
+    }
+
 }

@@ -52,4 +52,14 @@ public interface CompactionManagerOperations
     void stopCompaction(String compactionType);
 
     List<String> supportedCompactionTypes();
+
+    /**
+     * Triggers user-defined compaction for provided SSTable files.
+     *
+     * @param commaSeparatedFiles comma-separated SSTable file list
+     */
+    default void forceUserDefinedCompaction(String commaSeparatedFiles)
+    {
+        throw new UnsupportedOperationException("forceUserDefinedCompaction is not supported by this adapter");
+    }
 }
