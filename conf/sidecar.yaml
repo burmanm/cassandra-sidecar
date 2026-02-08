@@ -91,6 +91,19 @@ sidecar:
   # values are 'default' and 'resolve_to_ip'. Default will resolve hostnames to addresses and addresses to
   # hostnames whereas resolve_to_ip will only resolve hostnames to addresses.
   dns_resolver: default
+  # Endpoint access mode controls which endpoints are accessible. Valid values are:
+  #   - full: All endpoints are accessible (default for backward compatibility)
+  #   - analytics: Only analytics-library required endpoints are accessible
+  # When set to 'analytics', the following endpoints are accessible:
+  #   - Node settings, ring, and schema information
+  #   - Snapshot operations (create, clear)
+  #   - SSTable streaming (download components)
+  #   - Table statistics
+  #   - Health checks (Cassandra native/JMX and Sidecar)
+  #   - SSTable upload and import
+  #   - Upload session cleanup
+  # All other endpoints return HTTP 403 Forbidden in analytics mode.
+  endpoint_access_mode: analytics
   # The maximum wait time for operational job to run internally before returning the HTTP response;
   # if the job finishes before the max wait time, it returns immediately on completion;
   # otherwise, a response indicating the job is still running is returned after the maximum wait time.

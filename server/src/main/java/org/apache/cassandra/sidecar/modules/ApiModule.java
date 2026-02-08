@@ -44,6 +44,7 @@ import org.apache.cassandra.sidecar.config.FileSystemOptionsConfiguration;
 import org.apache.cassandra.sidecar.config.SidecarConfiguration;
 import org.apache.cassandra.sidecar.config.VertxConfiguration;
 import org.apache.cassandra.sidecar.config.VertxMetricsConfiguration;
+import org.apache.cassandra.sidecar.handlers.EndpointAccessControlHandler;
 import org.apache.cassandra.sidecar.handlers.JsonErrorHandler;
 import org.apache.cassandra.sidecar.handlers.TimeSkewHandler;
 import org.apache.cassandra.sidecar.logging.SidecarLoggerHandler;
@@ -148,15 +149,24 @@ public class ApiModule extends AbstractModule
     @ProvidesIntoMap
     @KeyClassMapKey(VertxRouteMapKeys.GlobalUtilityHandlerKey.class)
     VertxRoute globalUtilityHandler(SidecarConfiguration sidecarConfiguration,
-                                    LoggerHandler loggerHandler)
+                                    LoggerHandler loggerHandler,
+                                    EndpointAccessControlHandler endpointAccessControlHandler)
     {
         return VertxRoute.create(router -> {
             router.route()
                   .order(RoutingOrder.HIGHEST.order)
                   .handler(loggerHandler)
+                  .handler(endpointAccessControlHandler)
                   .handler(TimeoutHandler.create(sidecarConfiguration.serviceConfiguration().requestTimeout().toMillis(),
                                                  HttpResponseStatus.REQUEST_TIMEOUT.code()));
         });
+    }
+
+    @Provides
+    @Singleton
+    EndpointAccessControlHandler endpointAccessControlHandler(SidecarConfiguration sidecarConfiguration)
+    {
+        return new EndpointAccessControlHandler(sidecarConfiguration.serviceConfiguration());
     }
 
     @ProvidesIntoMap

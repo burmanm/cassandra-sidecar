@@ -192,4 +192,9 @@ public interface ServiceConfiguration
      * the IP address will be returned for both hostname and address.
      */
     DnsResolver dnsResolver();
+
+    /**
+     * @return the endpoint access mode controlling which endpoints are accessible
+     */
+    EndpointAccessMode endpointAccessMode();
 }

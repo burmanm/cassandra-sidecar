@@ -41,6 +41,7 @@ import org.apache.cassandra.sidecar.config.SSTableSnapshotConfiguration;
 import org.apache.cassandra.sidecar.config.SSTableUploadConfiguration;
 import org.apache.cassandra.sidecar.config.SchemaKeyspaceConfiguration;
 import org.apache.cassandra.sidecar.config.ServiceConfiguration;
+import org.apache.cassandra.sidecar.config.EndpointAccessMode;
 import org.apache.cassandra.sidecar.config.ThrottleConfiguration;
 import org.apache.cassandra.sidecar.config.TrafficShapingConfiguration;
 import org.apache.cassandra.sidecar.config.WorkerPoolConfiguration;
@@ -88,6 +89,8 @@ public class ServiceConfigurationImpl implements ServiceConfiguration
     private static final String CDC = "cdc";
     private static final String COORDINATION = "coordination";
     public static final String DNS_RESOLVER_PROPERTY = "dns_resolver";
+    public static final String ENDPOINT_ACCESS_MODE_PROPERTY = "endpoint_access_mode";
+    public static final EndpointAccessMode DEFAULT_ENDPOINT_ACCESS_MODE = EndpointAccessMode.FULL;
     protected static final Map<String, WorkerPoolConfiguration> DEFAULT_WORKER_POOLS_CONFIGURATION
     = Collections.unmodifiableMap(new HashMap<String, WorkerPoolConfiguration>()
     {{
@@ -161,6 +164,9 @@ public class ServiceConfigurationImpl implements ServiceConfiguration
     @JsonProperty(value = DNS_RESOLVER_PROPERTY)
     protected final DnsResolver dnsResolver;
 
+    @JsonProperty(value = ENDPOINT_ACCESS_MODE_PROPERTY)
+    protected final EndpointAccessMode endpointAccessMode;
+
     /**
      * Constructs a new {@link ServiceConfigurationImpl} with the default values
      */
@@ -198,6 +204,7 @@ public class ServiceConfigurationImpl implements ServiceConfiguration
         cdcConfiguration = builder.cdcConfiguration;
         coordinationConfiguration = builder.coordinationConfiguration;
         dnsResolver = builder.dnsResolver;
+        endpointAccessMode = builder.endpointAccessMode;
     }
 
     /**
@@ -492,6 +499,13 @@ public class ServiceConfigurationImpl implements ServiceConfiguration
         return dnsResolver;
     }
 
+    @Override
+    @JsonProperty(value = ENDPOINT_ACCESS_MODE_PROPERTY)
+    public EndpointAccessMode endpointAccessMode()
+    {
+        return endpointAccessMode;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -525,6 +539,7 @@ public class ServiceConfigurationImpl implements ServiceConfiguration
         protected CdcConfiguration cdcConfiguration = new CdcConfigurationImpl();
         protected CoordinationConfiguration coordinationConfiguration = new CoordinationConfigurationImpl();
         protected DnsResolver dnsResolver = DnsResolvers.DEFAULT;
+        protected EndpointAccessMode endpointAccessMode = DEFAULT_ENDPOINT_ACCESS_MODE;
 
         private Builder()
         {
@@ -772,6 +787,17 @@ public class ServiceConfigurationImpl implements ServiceConfiguration
         public Builder coordinationConfiguration(CoordinationConfiguration coordinationConfiguration)
         {
             return update(b -> b.coordinationConfiguration = coordinationConfiguration);
+        }
+
+        /**
+         * Sets the {@code endpointAccessMode} and returns a reference to this Builder enabling method chaining.
+         *
+         * @param endpointAccessMode the {@code endpointAccessMode} to set
+         * @return a reference to this Builder
+         */
+        public Builder endpointAccessMode(EndpointAccessMode endpointAccessMode)
+        {
+            return update(b -> b.endpointAccessMode = endpointAccessMode);
         }
 
         /**
