@@ -36,4 +36,27 @@ public interface ICassandraFactory
     ICassandraAdapter create(CQLSessionProvider session,
                              JmxClient client,
                              InetSocketAddress localNativeTransportAddress);
+
+    /**
+     * Returns the product identifier supported by this factory.
+     * Factories without {@link Product} annotation default to {@code cassandra}.
+     *
+     * @return product identifier
+     */
+    default String getProduct()
+    {
+        Product productAnnotation = getClass().getAnnotation(Product.class);
+        return productAnnotation != null ? productAnnotation.value() : AdapterProducts.CASSANDRA;
+    }
+
+    /**
+     * Returns whether this factory supports the provided product.
+     *
+     * @param product product identifier
+     * @return true if supported
+     */
+    default boolean supportsProduct(String product)
+    {
+        return getProduct().equals(product);
+    }
 }

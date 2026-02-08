@@ -20,8 +20,13 @@ package org.apache.cassandra.sidecar.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.apache.cassandra.sidecar.common.server.AdapterProducts;
 import org.apache.cassandra.sidecar.common.server.ICassandraFactory;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -31,6 +36,10 @@ import org.jetbrains.annotations.VisibleForTesting;
  */
 public class CassandraVersionProvider
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraVersionProvider.class);
+    public static final String SIDECAR_ADAPTER_PRODUCT_ENV = "SIDECAR_ADAPTER_PRODUCT";
+    public static final String CASSANDRA_PRODUCT_ENV = "CASSANDRA_PRODUCT";
+
     final ArrayList<ICassandraFactory> versions;
 
     public CassandraVersionProvider(ArrayList<ICassandraFactory> versions)
@@ -54,9 +63,40 @@ public class CassandraVersionProvider
      */
     public ICassandraFactory cassandra(SimpleCassandraVersion requestedVersion)
     {
-        ICassandraFactory result = versions.get(0);
+        return cassandra(resolveRequestedProduct(), requestedVersion);
+    }
 
-        for (ICassandraFactory factory : versions)
+    /**
+     * For the provided product and version, return a new ICassandraFactory instance
+     * that meets the minimum version requirements.
+     *
+     * @param product          requested product
+     * @param requestedVersion requested Cassandra version
+     * @return the factory for the requested product and version
+     */
+    public ICassandraFactory cassandra(String product, SimpleCassandraVersion requestedVersion)
+    {
+        List<ICassandraFactory> candidates = versions.stream()
+                                                     .filter(factory -> factory.supportsProduct(product))
+                                                     .collect(Collectors.toList());
+
+        if (candidates.isEmpty())
+        {
+            LOGGER.warn("No adapters found for product '{}'. Falling back to product '{}'",
+                        product, AdapterProducts.CASSANDRA);
+            candidates = versions.stream()
+                                 .filter(factory -> factory.supportsProduct(AdapterProducts.CASSANDRA))
+                                 .collect(Collectors.toList());
+        }
+
+        if (candidates.isEmpty())
+        {
+            throw new IllegalStateException("No factories available for default product '" + AdapterProducts.CASSANDRA + "'");
+        }
+
+        ICassandraFactory result = candidates.get(0);
+
+        for (ICassandraFactory factory : candidates)
         {
             SimpleCassandraVersion currentMinVersion = SimpleCassandraVersion.create(result);
             SimpleCassandraVersion nextVersion = SimpleCassandraVersion.create(factory);
@@ -84,6 +124,48 @@ public class CassandraVersionProvider
     {
         SimpleCassandraVersion version = SimpleCassandraVersion.create(requestedVersion);
         return cassandra(version);
+    }
+
+    /**
+     * Convenience method for getCassandra with explicit product and version strings.
+     *
+     * @param product          requested product
+     * @param requestedVersion requested version string
+     * @return the Cassandra factory implementation
+     */
+    public ICassandraFactory cassandra(String product, String requestedVersion)
+    {
+        SimpleCassandraVersion version = SimpleCassandraVersion.create(requestedVersion);
+        return cassandra(product, version);
+    }
+
+    /**
+     * Resolves requested adapter product from environment variables.
+     *
+     * <p>Priority order:
+     * <ol>
+     *   <li>SIDECAR_ADAPTER_PRODUCT</li>
+     *   <li>CASSANDRA_PRODUCT</li>
+     *   <li>cassandra</li>
+     * </ol>
+     *
+     * @return requested product
+     */
+    public String resolveRequestedProduct()
+    {
+        String sidecarProduct = System.getenv(SIDECAR_ADAPTER_PRODUCT_ENV);
+        if (sidecarProduct != null && !sidecarProduct.trim().isEmpty())
+        {
+            return sidecarProduct.trim();
+        }
+
+        String cassandraProduct = System.getenv(CASSANDRA_PRODUCT_ENV);
+        if (cassandraProduct != null && !cassandraProduct.trim().isEmpty())
+        {
+            return cassandraProduct.trim();
+        }
+
+        return AdapterProducts.CASSANDRA;
     }
 
     /**
