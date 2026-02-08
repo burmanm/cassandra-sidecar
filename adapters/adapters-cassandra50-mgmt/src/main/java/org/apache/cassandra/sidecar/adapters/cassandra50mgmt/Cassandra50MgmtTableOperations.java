@@ -59,67 +59,115 @@ class Cassandra50MgmtTableOperations extends CassandraTableOperations
                       String keyspace,
                       List<String> tables)
     {
-        nodeOpsExecutor.executePrepared("CALL NodeOps.scrub(?, ?, ?, ?, ?, ?, ?, ?)",
-                                        disableSnapshot,
-                                        skipCorrupted,
-                                        checkData,
-                                        reinsertOverflowedTtl,
-                                        jobs,
-                                        keyspace,
-                                        normalizeList(tables),
-                                        false);
+        scrubAsync(disableSnapshot, skipCorrupted, checkData, reinsertOverflowedTtl, jobs, keyspace, tables);
+    }
+
+    @Override
+    public String scrubAsync(boolean disableSnapshot,
+                             boolean skipCorrupted,
+                             boolean checkData,
+                             boolean reinsertOverflowedTtl,
+                             int jobs,
+                             String keyspace,
+                             List<String> tables)
+    {
+        com.datastax.driver.core.Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.scrub(?, ?, ?, ?, ?, ?, ?, ?)",
+                                                                            disableSnapshot,
+                                                                            skipCorrupted,
+                                                                            checkData,
+                                                                            reinsertOverflowedTtl,
+                                                                            jobs,
+                                                                            keyspace,
+                                                                            normalizeList(tables),
+                                                                            true).one();
+        return row == null ? null : row.getString(0);
     }
 
     @Override
     public void upgradeSSTables(String keyspace, List<String> tables, boolean includeCurrentVersion, int jobs)
     {
-        nodeOpsExecutor.executePrepared("CALL NodeOps.upgradeSSTables(?, ?, ?, ?, ?)",
-                                        keyspace,
-                                        includeCurrentVersion,
-                                        jobs,
-                                        normalizeList(tables),
-                                        false);
+        upgradeSSTablesAsync(keyspace, tables, includeCurrentVersion, jobs);
+    }
+
+    @Override
+    public String upgradeSSTablesAsync(String keyspace, List<String> tables, boolean includeCurrentVersion, int jobs)
+    {
+        com.datastax.driver.core.Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.upgradeSSTables(?, ?, ?, ?, ?)",
+                                                                            keyspace,
+                                                                            includeCurrentVersion,
+                                                                            jobs,
+                                                                            normalizeList(tables),
+                                                                            true).one();
+        return row == null ? null : row.getString(0);
     }
 
     @Override
     public void garbageCollect(String tombstoneOption, int jobs, String keyspace, List<String> tables)
     {
-        nodeOpsExecutor.executePrepared("CALL NodeOps.garbageCollect(?, ?, ?, ?, ?)",
-                                        tombstoneOption,
-                                        jobs,
-                                        keyspace,
-                                        normalizeList(tables),
-                                        false);
+        garbageCollectAsync(tombstoneOption, jobs, keyspace, tables);
+    }
+
+    @Override
+    public String garbageCollectAsync(String tombstoneOption, int jobs, String keyspace, List<String> tables)
+    {
+        com.datastax.driver.core.Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.garbageCollect(?, ?, ?, ?, ?)",
+                                                                            tombstoneOption,
+                                                                            jobs,
+                                                                            keyspace,
+                                                                            normalizeList(tables),
+                                                                            true).one();
+        return row == null ? null : row.getString(0);
     }
 
     @Override
     public void forceKeyspaceFlush(String keyspace, List<String> tables)
     {
-        nodeOpsExecutor.executePrepared("CALL NodeOps.forceKeyspaceFlush(?, ?, ?)",
-                                        keyspace,
-                                        normalizeList(tables),
-                                        false);
+        forceKeyspaceFlushAsync(keyspace, tables);
+    }
+
+    @Override
+    public String forceKeyspaceFlushAsync(String keyspace, List<String> tables)
+    {
+        com.datastax.driver.core.Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.forceKeyspaceFlush(?, ?, ?)",
+                                                                            keyspace,
+                                                                            normalizeList(tables),
+                                                                            true).one();
+        return row == null ? null : row.getString(0);
     }
 
     @Override
     public void forceKeyspaceCompaction(boolean splitOutput, String keyspace, List<String> tables)
     {
-        nodeOpsExecutor.executePrepared("CALL NodeOps.forceKeyspaceCompaction(?, ?, ?, ?)",
-                                        splitOutput,
-                                        keyspace,
-                                        normalizeList(tables),
-                                        false);
+        forceKeyspaceCompactionAsync(splitOutput, keyspace, tables);
+    }
+
+    @Override
+    public String forceKeyspaceCompactionAsync(boolean splitOutput, String keyspace, List<String> tables)
+    {
+        com.datastax.driver.core.Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.forceKeyspaceCompaction(?, ?, ?, ?)",
+                                                                            splitOutput,
+                                                                            keyspace,
+                                                                            normalizeList(tables),
+                                                                            true).one();
+        return row == null ? null : row.getString(0);
     }
 
     @Override
     public void forceKeyspaceCompactionForTokenRange(String keyspace, String startToken, String endToken, List<String> tables)
     {
-        nodeOpsExecutor.executePrepared("CALL NodeOps.forceKeyspaceCompactionForTokenRange(?, ?, ?, ?, ?)",
-                                        keyspace,
-                                        startToken,
-                                        endToken,
-                                        normalizeList(tables),
-                                        false);
+        forceKeyspaceCompactionForTokenRangeAsync(keyspace, startToken, endToken, tables);
+    }
+
+    @Override
+    public String forceKeyspaceCompactionForTokenRangeAsync(String keyspace, String startToken, String endToken, List<String> tables)
+    {
+        com.datastax.driver.core.Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.forceKeyspaceCompactionForTokenRange(?, ?, ?, ?, ?)",
+                                                                            keyspace,
+                                                                            startToken,
+                                                                            endToken,
+                                                                            normalizeList(tables),
+                                                                            true).one();
+        return row == null ? null : row.getString(0);
     }
 
     @Override

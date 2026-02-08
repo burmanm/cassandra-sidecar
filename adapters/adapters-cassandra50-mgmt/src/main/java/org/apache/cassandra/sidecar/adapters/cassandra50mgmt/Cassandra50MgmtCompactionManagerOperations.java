@@ -41,6 +41,15 @@ class Cassandra50MgmtCompactionManagerOperations extends Cassandra50CompactionMa
     @Override
     public void forceUserDefinedCompaction(String commaSeparatedFiles)
     {
-        nodeOpsExecutor.executePrepared("CALL NodeOps.forceUserDefinedCompaction(?, ?)", commaSeparatedFiles, false);
+        forceUserDefinedCompactionAsync(commaSeparatedFiles);
+    }
+
+    @Override
+    public String forceUserDefinedCompactionAsync(String commaSeparatedFiles)
+    {
+        com.datastax.driver.core.Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.forceUserDefinedCompaction(?, ?)",
+                                                                            commaSeparatedFiles,
+                                                                            true).one();
+        return row == null ? null : row.getString(0);
     }
 }

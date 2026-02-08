@@ -90,7 +90,11 @@ public class ManagementCleanupKeyspaceHandler extends AbstractHandler<Management
 
                          StorageOperations operations = metadataFetcher.delegate(host).storageOperations();
                          String opId = operations.forceKeyspaceCleanup(request.jobsOrDefault(), keyspace, request.tablesOrEmpty());
-                         return opId == null ? "OK" : opId;
+                         if (opId == null || opId.trim().isEmpty())
+                         {
+                             throw new IllegalStateException("Expected async cleanup operation id but none was returned");
+                         }
+                         return opId;
                      })
                      .onSuccess(context.response()::end)
                      .onFailure(cause -> processFailure(cause, context, host, remoteAddress, request));

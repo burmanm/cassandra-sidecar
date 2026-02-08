@@ -62,4 +62,15 @@ public interface CompactionManagerOperations
     {
         throw new UnsupportedOperationException("forceUserDefinedCompaction is not supported by this adapter");
     }
+
+    /**
+     * Triggers asynchronous user-defined compaction for provided SSTable files.
+     *
+     * @param commaSeparatedFiles comma-separated SSTable file list
+     * @return operation id
+     */
+    default String forceUserDefinedCompactionAsync(String commaSeparatedFiles)
+    {
+        throw new UnsupportedOperationException("forceUserDefinedCompactionAsync is not supported by this adapter");
+    }
 }

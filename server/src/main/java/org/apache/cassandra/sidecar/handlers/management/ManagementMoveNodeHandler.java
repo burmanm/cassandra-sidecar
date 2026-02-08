@@ -78,8 +78,12 @@ public class ManagementMoveNodeHandler extends AbstractHandler<String> implement
         executorPools.service()
                      .executeBlocking(() -> {
                          StorageOperations operations = metadataFetcher.delegate(host).storageOperations();
-                         operations.move(request);
-                         return "OK";
+                         String operationId = operations.moveAsync(request);
+                         if (operationId == null || operationId.trim().isEmpty())
+                         {
+                             throw new IllegalStateException("Expected async move operation id but none was returned");
+                         }
+                         return operationId;
                      })
                      .onSuccess(context.response()::end)
                      .onFailure(cause -> processFailure(cause, context, host, remoteAddress, request));

@@ -71,8 +71,12 @@ public class ManagementDecommissionNodeHandler extends AbstractHandler<Boolean> 
         executorPools.service()
                      .executeBlocking(() -> {
                          StorageOperations operations = metadataFetcher.delegate(host).storageOperations();
-                         operations.decommission(request);
-                         return "OK";
+                         String operationId = operations.decommissionAsync(request);
+                         if (operationId == null || operationId.trim().isEmpty())
+                         {
+                             throw new IllegalStateException("Expected async decommission operation id but none was returned");
+                         }
+                         return operationId;
                      })
                      .onSuccess(context.response()::end)
                      .onFailure(cause -> processFailure(cause, context, host, remoteAddress, request));

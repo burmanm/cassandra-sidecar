@@ -70,8 +70,12 @@ public class ManagementRebuildNodeHandler extends AbstractHandler<String> implem
         executorPools.service()
                      .executeBlocking(() -> {
                          StorageOperations operations = metadataFetcher.delegate(host).storageOperations();
-                         operations.rebuild(request);
-                         return "OK";
+                         String operationId = operations.rebuildAsync(request);
+                         if (operationId == null || operationId.trim().isEmpty())
+                         {
+                             throw new IllegalStateException("Expected async rebuild operation id but none was returned");
+                         }
+                         return operationId;
                      })
                      .onSuccess(context.response()::end)
                      .onFailure(cause -> processFailure(cause, context, host, remoteAddress, request));

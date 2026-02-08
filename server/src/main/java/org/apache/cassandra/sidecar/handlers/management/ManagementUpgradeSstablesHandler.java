@@ -88,11 +88,15 @@ implements AccessProtected
         executorPools.service()
                      .executeBlocking(() -> {
                          TableOperations operations = metadataFetcher.delegate(host).tableOperations();
-                         operations.upgradeSSTables(request.keyspaceRequest.keyspaceOrDefault("ALL"),
-                                                    request.keyspaceRequest.tablesOrEmpty(),
-                                                    !request.excludeCurrentVersion,
-                                                    request.keyspaceRequest.jobsOrDefault());
-                         return "OK";
+                         String operationId = operations.upgradeSSTablesAsync(request.keyspaceRequest.keyspaceOrDefault("ALL"),
+                                                                              request.keyspaceRequest.tablesOrEmpty(),
+                                                                              !request.excludeCurrentVersion,
+                                                                              request.keyspaceRequest.jobsOrDefault());
+                         if (operationId == null || operationId.trim().isEmpty())
+                         {
+                             throw new IllegalStateException("Expected async upgrade operation id but none was returned");
+                         }
+                         return operationId;
                      })
                      .onSuccess(context.response()::end)
                      .onFailure(cause -> processFailure(cause, context, host, remoteAddress, request));

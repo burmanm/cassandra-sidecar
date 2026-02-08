@@ -106,20 +106,31 @@ public class ManagementCompactTablesHandler extends AbstractHandler<ManagementCo
                          if (request.userDefined)
                          {
                              String files = request.userDefinedFiles.stream().collect(Collectors.joining(","));
-                             compactionOperations.forceUserDefinedCompaction(files);
+                             String operationId = compactionOperations.forceUserDefinedCompactionAsync(files);
+                             if (operationId == null || operationId.trim().isEmpty())
+                             {
+                                 throw new IllegalStateException("Expected async user-defined compaction id but none was returned");
+                             }
+                             return operationId;
                          }
-                         else if (tokenProvided)
+                         if (tokenProvided)
                          {
-                             tableOperations.forceKeyspaceCompactionForTokenRange(keyspace,
-                                                                                  request.startToken,
-                                                                                  request.endToken,
-                                                                                  request.tablesOrEmpty());
+                             String operationId = tableOperations.forceKeyspaceCompactionForTokenRangeAsync(keyspace,
+                                                                                                             request.startToken,
+                                                                                                             request.endToken,
+                                                                                                             request.tablesOrEmpty());
+                             if (operationId == null || operationId.trim().isEmpty())
+                             {
+                                 throw new IllegalStateException("Expected async token-range compaction id but none was returned");
+                             }
+                             return operationId;
                          }
-                         else
+                         String operationId = tableOperations.forceKeyspaceCompactionAsync(request.splitOutput, keyspace, request.tablesOrEmpty());
+                         if (operationId == null || operationId.trim().isEmpty())
                          {
-                             tableOperations.forceKeyspaceCompaction(request.splitOutput, keyspace, request.tablesOrEmpty());
+                             throw new IllegalStateException("Expected async compaction id but none was returned");
                          }
-                         return "OK";
+                         return operationId;
                      })
                      .onSuccess(context.response()::end)
                      .onFailure(cause -> processFailure(cause, context, host, remoteAddress, request));

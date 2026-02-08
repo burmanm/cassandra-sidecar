@@ -48,13 +48,27 @@ class Cassandra50MgmtStorageOperations extends Cassandra50StorageOperations
     @Override
     public void rebuild(@Nullable String sourceDatacenter)
     {
-        nodeOpsExecutor.executePrepared("CALL NodeOps.rebuild(?)", sourceDatacenter);
+        rebuildAsync(sourceDatacenter);
+    }
+
+    @Override
+    public String rebuildAsync(@Nullable String sourceDatacenter)
+    {
+        Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.rebuild(?)", sourceDatacenter).one();
+        return row == null ? null : row.getString(0);
     }
 
     @Override
     public void decommission(boolean force)
     {
-        nodeOpsExecutor.executePrepared("CALL NodeOps.decommission(?, ?)", force, false);
+        decommissionAsync(force);
+    }
+
+    @Override
+    public String decommissionAsync(boolean force)
+    {
+        Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.decommission(?, ?)", force, true).one();
+        return row == null ? null : row.getString(0);
     }
 
     @Override
@@ -203,7 +217,7 @@ class Cassandra50MgmtStorageOperations extends Cassandra50StorageOperations
                                                   jobs,
                                                   keyspace,
                                                   tables,
-                                                  false).one();
+                                                  true).one();
         return row == null ? null : row.getString(0);
     }
 
@@ -239,6 +253,13 @@ class Cassandra50MgmtStorageOperations extends Cassandra50StorageOperations
     @Override
     public void move(String newToken)
     {
-        nodeOpsExecutor.executePrepared("CALL NodeOps.move(?, ?)", newToken, false);
+        moveAsync(newToken);
+    }
+
+    @Override
+    public String moveAsync(String newToken)
+    {
+        Row row = nodeOpsExecutor.executePrepared("CALL NodeOps.move(?, ?)", newToken, true).one();
+        return row == null ? null : row.getString(0);
     }
 }

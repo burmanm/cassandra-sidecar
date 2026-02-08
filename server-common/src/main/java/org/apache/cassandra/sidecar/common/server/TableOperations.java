@@ -92,6 +92,22 @@ public interface TableOperations
     }
 
     /**
+     * Triggers asynchronous scrub.
+     *
+     * @return operation id
+     */
+    default String scrubAsync(boolean disableSnapshot,
+                              boolean skipCorrupted,
+                              boolean checkData,
+                              boolean reinsertOverflowedTtl,
+                              int jobs,
+                              @NotNull String keyspace,
+                              @NotNull List<String> tables)
+    {
+        throw new UnsupportedOperationException("scrubAsync is not supported by this adapter");
+    }
+
+    /**
      * Triggers SSTable upgrade.
      */
     default void upgradeSSTables(@NotNull String keyspace,
@@ -100,6 +116,19 @@ public interface TableOperations
                                  int jobs)
     {
         throw new UnsupportedOperationException("upgradeSSTables is not supported by this adapter");
+    }
+
+    /**
+     * Triggers asynchronous SSTable upgrade.
+     *
+     * @return operation id
+     */
+    default String upgradeSSTablesAsync(@NotNull String keyspace,
+                                        @NotNull List<String> tables,
+                                        boolean includeCurrentVersion,
+                                        int jobs)
+    {
+        throw new UnsupportedOperationException("upgradeSSTablesAsync is not supported by this adapter");
     }
 
     /**
@@ -114,11 +143,34 @@ public interface TableOperations
     }
 
     /**
+     * Triggers asynchronous garbage collection.
+     *
+     * @return operation id
+     */
+    default String garbageCollectAsync(@NotNull String tombstoneOption,
+                                       int jobs,
+                                       @NotNull String keyspace,
+                                       @NotNull List<String> tables)
+    {
+        throw new UnsupportedOperationException("garbageCollectAsync is not supported by this adapter");
+    }
+
+    /**
      * Triggers flush for keyspace tables.
      */
     default void forceKeyspaceFlush(@NotNull String keyspace, @NotNull List<String> tables)
     {
         throw new UnsupportedOperationException("forceKeyspaceFlush is not supported by this adapter");
+    }
+
+    /**
+     * Triggers asynchronous flush for keyspace tables.
+     *
+     * @return operation id
+     */
+    default String forceKeyspaceFlushAsync(@NotNull String keyspace, @NotNull List<String> tables)
+    {
+        throw new UnsupportedOperationException("forceKeyspaceFlushAsync is not supported by this adapter");
     }
 
     /**
@@ -130,6 +182,18 @@ public interface TableOperations
     }
 
     /**
+     * Triggers asynchronous compaction for keyspace tables.
+     *
+     * @return operation id
+     */
+    default String forceKeyspaceCompactionAsync(boolean splitOutput,
+                                                @NotNull String keyspace,
+                                                @NotNull List<String> tables)
+    {
+        throw new UnsupportedOperationException("forceKeyspaceCompactionAsync is not supported by this adapter");
+    }
+
+    /**
      * Triggers compaction for token range in keyspace tables.
      */
     default void forceKeyspaceCompactionForTokenRange(@NotNull String keyspace,
@@ -138,6 +202,19 @@ public interface TableOperations
                                                       @NotNull List<String> tables)
     {
         throw new UnsupportedOperationException("forceKeyspaceCompactionForTokenRange is not supported by this adapter");
+    }
+
+    /**
+     * Triggers asynchronous compaction for token range in keyspace tables.
+     *
+     * @return operation id
+     */
+    default String forceKeyspaceCompactionForTokenRangeAsync(@NotNull String keyspace,
+                                                             @NotNull String startToken,
+                                                             @NotNull String endToken,
+                                                             @NotNull List<String> tables)
+    {
+        throw new UnsupportedOperationException("forceKeyspaceCompactionForTokenRangeAsync is not supported by this adapter");
     }
 
     /**

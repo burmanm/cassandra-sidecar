@@ -95,11 +95,15 @@ implements AccessProtected
         executorPools.service()
                      .executeBlocking(() -> {
                          TableOperations operations = metadataFetcher.delegate(host).tableOperations();
-                         operations.garbageCollect(request.tombstoneOption,
-                                                   request.keyspaceRequest.jobsOrDefault(),
-                                                   request.keyspaceRequest.keyspaceOrDefault("ALL"),
-                                                   request.keyspaceRequest.tablesOrEmpty());
-                         return "OK";
+                         String operationId = operations.garbageCollectAsync(request.tombstoneOption,
+                                                                             request.keyspaceRequest.jobsOrDefault(),
+                                                                             request.keyspaceRequest.keyspaceOrDefault("ALL"),
+                                                                             request.keyspaceRequest.tablesOrEmpty());
+                         if (operationId == null || operationId.trim().isEmpty())
+                         {
+                             throw new IllegalStateException("Expected async garbage-collect operation id but none was returned");
+                         }
+                         return operationId;
                      })
                      .onSuccess(context.response()::end)
                      .onFailure(cause -> processFailure(cause, context, host, remoteAddress, request));

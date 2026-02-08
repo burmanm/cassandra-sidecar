@@ -119,6 +119,17 @@ public interface StorageOperations
     void decommission(boolean force);
 
     /**
+     * Triggers asynchronous node decommission operation.
+     *
+     * @param force force decommission, bypassing RF checks
+     * @return operation id
+     */
+    default String decommissionAsync(boolean force)
+    {
+        throw new UnsupportedOperationException("decommissionAsync is not supported by this adapter");
+    }
+
+    /**
      * Triggers the node drain operation
      */
     void drain() throws IOException, InterruptedException, ExecutionException;
@@ -206,6 +217,17 @@ public interface StorageOperations
     void move(String newToken) throws IOException;
 
     /**
+     * Triggers asynchronous node move operation.
+     *
+     * @param newToken the new token for the node to move to
+     * @return operation id
+     */
+    default String moveAsync(@NotNull String newToken)
+    {
+        throw new UnsupportedOperationException("moveAsync is not supported by this adapter");
+    }
+
+    /**
      * Triggers a rebuild operation.
      *
      * @param sourceDatacenter source datacenter name, or null for all datacenters
@@ -213,6 +235,17 @@ public interface StorageOperations
     default void rebuild(@Nullable String sourceDatacenter)
     {
         throw new UnsupportedOperationException("rebuild is not supported by this adapter");
+    }
+
+    /**
+     * Triggers asynchronous rebuild operation.
+     *
+     * @param sourceDatacenter source datacenter name, or null for all datacenters
+     * @return operation id
+     */
+    default String rebuildAsync(@Nullable String sourceDatacenter)
+    {
+        throw new UnsupportedOperationException("rebuildAsync is not supported by this adapter");
     }
 
     /**

@@ -83,8 +83,12 @@ public class ManagementFlushTablesHandler extends AbstractHandler<ManagementKeys
         executorPools.service()
                      .executeBlocking(() -> {
                          TableOperations operations = metadataFetcher.delegate(host).tableOperations();
-                         operations.forceKeyspaceFlush(request.keyspaceOrDefault("ALL"), request.tablesOrEmpty());
-                         return "OK";
+                         String operationId = operations.forceKeyspaceFlushAsync(request.keyspaceOrDefault("ALL"), request.tablesOrEmpty());
+                         if (operationId == null || operationId.trim().isEmpty())
+                         {
+                             throw new IllegalStateException("Expected async flush operation id but none was returned");
+                         }
+                         return operationId;
                      })
                      .onSuccess(context.response()::end)
                      .onFailure(cause -> processFailure(cause, context, host, remoteAddress, request));

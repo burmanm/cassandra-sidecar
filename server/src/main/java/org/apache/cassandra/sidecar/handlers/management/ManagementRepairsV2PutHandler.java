@@ -89,14 +89,19 @@ public class ManagementRepairsV2PutHandler extends AbstractHandler<ManagementRep
         executorPools.service()
                      .executeBlocking(() -> {
                          StorageOperations operations = metadataFetcher.delegate(host).storageOperations();
-                         return operations.nodeOpsRepair(request.keyspace,
-                                                         request.tables,
-                                                         request.fullRepairOrDefault(),
-                                                         true,
-                                                         request.repairParallelism,
-                                                         request.datacenters,
-                                                         request.associatedTokensAsRanges(),
-                                                         request.repairThreadCount);
+                         String operationId = operations.nodeOpsRepair(request.keyspace,
+                                                                       request.tables,
+                                                                       request.fullRepairOrDefault(),
+                                                                       true,
+                                                                       request.repairParallelism,
+                                                                       request.datacenters,
+                                                                       request.associatedTokensAsRanges(),
+                                                                       request.repairThreadCount);
+                         if (operationId == null || operationId.trim().isEmpty())
+                         {
+                             throw new IllegalStateException("Expected async repair operation id but none was returned");
+                         }
+                         return operationId;
                      })
                      .onSuccess(repairId -> {
                          context.response().setStatusCode(202).end(Json.encode(Collections.singletonMap("repair_id", repairId)));

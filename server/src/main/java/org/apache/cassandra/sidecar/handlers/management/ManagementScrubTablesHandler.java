@@ -83,14 +83,18 @@ public class ManagementScrubTablesHandler extends AbstractHandler<ManagementScru
         executorPools.service()
                      .executeBlocking(() -> {
                          TableOperations operations = metadataFetcher.delegate(host).tableOperations();
-                         operations.scrub(request.disableSnapshot,
-                                          request.skipCorrupted,
-                                          request.checkData,
-                                          request.reinsertOverflowedTtl,
-                                          request.jobsOrDefault(),
-                                          request.keyspaceOrDefault("ALL"),
-                                          request.tablesOrEmpty());
-                         return "OK";
+                         String operationId = operations.scrubAsync(request.disableSnapshot,
+                                                                    request.skipCorrupted,
+                                                                    request.checkData,
+                                                                    request.reinsertOverflowedTtl,
+                                                                    request.jobsOrDefault(),
+                                                                    request.keyspaceOrDefault("ALL"),
+                                                                    request.tablesOrEmpty());
+                         if (operationId == null || operationId.trim().isEmpty())
+                         {
+                             throw new IllegalStateException("Expected async scrub operation id but none was returned");
+                         }
+                         return operationId;
                      })
                      .onSuccess(context.response()::end)
                      .onFailure(cause -> processFailure(cause, context, host, remoteAddress, request));

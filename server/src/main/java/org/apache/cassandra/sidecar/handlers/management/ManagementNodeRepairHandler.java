@@ -91,8 +91,12 @@ public class ManagementNodeRepairHandler extends AbstractHandler<ManagementRepai
                          String operationId = operations.nodeOpsRepair(request.keyspaceName,
                                                                        request.tables,
                                                                        request.full,
-                                                                       request.async);
-                         return operationId == null ? "OK" : operationId;
+                                                                       true);
+                         if (operationId == null || operationId.trim().isEmpty())
+                         {
+                             throw new IllegalStateException("Expected async repair operation id but none was returned");
+                         }
+                         return operationId;
                      })
                      .onSuccess(context.response()::end)
                      .onFailure(cause -> processFailure(cause, context, host, remoteAddress, request));
