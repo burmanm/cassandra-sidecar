@@ -83,15 +83,20 @@ jobs:
           echo "Created test artifact tarball: $TEST_NAME"
           ls -lh "$TEST_NAME"
 
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push Docker image (latest tag)
-        run: |
-          ./gradlew :server:jib \
-            -Djib.to.image=ghcr.io/apache/cassandra-sidecar:latest \
-            -Djib.to.auth.username=${{ github.actor }} \
-            -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }} \
-            --stacktrace
-        env:
-          SKIP_SIGNING: true
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/apache/cassandra-sidecar:latest
 
       - name: Delete existing test-artifacts release
         continue-on-error: true

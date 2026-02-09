@@ -317,7 +317,7 @@ jobs:
     steps:
       - setup_remote_docker
       - checkout
-      - run: ./gradlew --info clean :server:jibDockerBuild
+      - run: ./gradlew --info clean dockerBuild
 
   docs_build:
     docker:

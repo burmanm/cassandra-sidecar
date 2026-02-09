@@ -42,10 +42,6 @@ plugins {
     // since we're using a specific version here, we delay applying the plugin till the all projects
     id "com.github.spotbugs" version "6.0.20" apply false
 
-    // Help resolve dependency conflicts between jib and ospackage
-    // See: https://github.com/GoogleContainerTools/jib/issues/4235#issuecomment-2088829367
-    id('com.google.cloud.tools.jib') version '3.4.4' apply false
-
     // https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki
     id "com.netflix.nebula.ospackage" version "11.10.0"
     id 'com.netflix.nebula.ospackage-application' version "11.10.0"
@@ -429,6 +425,25 @@ tasks.named('distTar').configure {
 tasks.named('sourcesDistTar').configure {
     compression = Compression.GZIP
     archiveExtension = "tar.gz"
+}
+
+tasks.register('dockerBuild', Exec) {
+    description = 'Builds the Cassandra Sidecar Docker image from Dockerfile (multi-stage source build)'
+    group = 'distribution'
+
+    def imageName = propertyWithDefault("dockerImageName", "cassandra-sidecar")
+    def imageTag = propertyWithDefault("dockerImageTag", project.version.toString())
+    def dockerfile = layout.projectDirectory.file("Dockerfile").asFile.absolutePath
+    def contextDir = layout.projectDirectory.asFile.absolutePath
+
+    commandLine 'docker', 'build',
+            '--file', dockerfile,
+            '--tag', "${imageName}:${imageTag}",
+            contextDir
+}
+
+if (propertyExists("buildDockerImage")) {
+    build.dependsOn dockerBuild
 }
 
 signing {

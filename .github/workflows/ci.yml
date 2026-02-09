@@ -539,9 +539,9 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/trunk' }}
 
-      - name: Build Docker image with Jib
+      - name: Build Docker image
         run: |
-          ./gradlew --info clean :server:jibDockerBuild
+          ./gradlew --info clean dockerBuild
 
   # Build documentation
   docs-build:

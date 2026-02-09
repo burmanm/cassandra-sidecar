@@ -20,7 +20,7 @@ There are two supported methods for installing pre-built versions of Cassandra S
     * Tarball binary file
     * Package installation (RPM, YUM)
 
-Additionally, you can build a Docker image from source by running `./gradlew :server:jibDockerBuild` from the Cassandra Sidecar repository.
+Additionally, you can build a Docker image from source by running `./gradlew dockerBuild` from the Cassandra Sidecar repository.
 
 ### Tarball binary file
 First, verify that you have installed the correct Java version by running:
