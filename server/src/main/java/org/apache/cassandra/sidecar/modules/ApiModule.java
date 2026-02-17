@@ -156,9 +156,9 @@ public class ApiModule extends AbstractModule
             router.route()
                   .order(RoutingOrder.HIGHEST.order)
                   .handler(loggerHandler)
-                  .handler(endpointAccessControlHandler)
                   .handler(TimeoutHandler.create(sidecarConfiguration.serviceConfiguration().requestTimeout().toMillis(),
-                                                 HttpResponseStatus.REQUEST_TIMEOUT.code()));
+                                                 HttpResponseStatus.REQUEST_TIMEOUT.code()))
+                  .handler(endpointAccessControlHandler);
         });
     }
 
