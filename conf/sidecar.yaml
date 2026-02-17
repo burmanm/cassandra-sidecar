@@ -21,7 +21,7 @@
 #
 cassandra_instances:
   - id: 1
-    host: localhost1
+    host: localhost
     port: 9042
 
     # The storage port used for inter-node communication between Cassandra nodes in a cluster.
@@ -231,23 +231,24 @@ schema_reporting:                            # Schema Reporting configuration
 #
 # Enable SSL configuration (Disabled by default)
 #
-#ssl:
-#  enabled: true
-#  use_openssl: true
-#  handshake_timeout: 10s
-#  client_auth: NONE # valid options are NONE, REQUEST, REQUIRED
-#  accepted_protocols:
-#   - TLSv1.2
-#   - TLSv1.3
-#  cipher_suites: []
-#  keystore:
-#    type: PKCS12
-#    path: "path/to/keystore.p12"
-#    password: password
-#    check_interval: 5m
-#  truststore:
-#    path: "path/to/truststore.p12"
-#    password: password
+ssl:
+  enabled: true
+  use_openssl: true
+  handshake_timeout: 10s
+  client_auth: REQUIRED # valid options are NONE, REQUEST, REQUIRED
+  accepted_protocols:
+    - TLSv1.2
+    - TLSv1.3
+  cipher_suites: []
+  keystore:
+    type: JKS
+    path: "/management-api-certs-ks/keystore.jks"
+    password: changeit
+    check_interval: 5m
+  truststore:
+    type: JKS
+    path: "/management-api-certs-ks/truststore.jks"
+    password: changeit
 
 # To enable access control, the role used by sidecar to talk to Cassandra must be granted following permissions
 # - GRANT DESCRIBE ON ALL ROLES to <insert_sidecar_role>          - Allows sidecar to list roles that belong to a user
@@ -339,10 +340,10 @@ driver_parameters:
   contact_points:
     - "127.0.0.1:9042"
   auth_provider:
-    class_name: org.apache.cassandra.sidecar.cluster.auth.ConfigProvider
+    class_name: org.apache.cassandra.sidecar.cluster.auth.FileProvider
     parameters:
-      username: cassandra
-      password: cassandra
+      username_path: /superuser-secret/username
+      password_path: /superuser-secret/password
   ssl:
     enabled:  false
     keystore:
@@ -363,7 +364,7 @@ healthcheck:
 # Cluster Topology Monitor settings
 # Monitors Cassandra cluster topology changes and publishes events when detected
 cluster_topology_monitor:
-  enabled: true
+  enabled: false
   initial_delay: 0s
   execute_interval: 1000ms  # Interval between topology refresh cycles
 
@@ -407,7 +408,7 @@ sidecar_client:
 metrics:
   registry_name: cassandra_sidecar
   vertx:
-    enabled: true
+    enabled: false
     expose_via_jmx: false
     jmx_domain_name: sidecar.vertx.jmx_domain
   include:                                    # empty include list means include all
