@@ -10,6 +10,21 @@ Packages can be built using the following Gradle commands:
 
     ./gradlew buildDeb
     ./gradlew buildRpm
+    ./gradlew buildDocker
+
+### Building Docker images
+
+The Docker image build sequence is self contained, it does not need host machine to build with gradle first. It accepts normal buildx parameters to modify the build parameters as well as certain env variables for the Dockerfile. The Dockerfile has all the logic that's required for the build and can be called directly without the need to install Gradle.
+
+Two target options are provided, runner-distroless (`DISTROLESS_RUNNER_IMAGE` to configure distroless baseimage) and runner (`RUNNER_IMAGE` to configure UBI baseimage).
+
+When used through Gradle, the Gradle properties `version`, `dockerImage` and `buildxOptions` are accepted. For example:
+
+    ./gradlew buildDocker -PdockerImage=privaterepo/cassandra-sidecar:latest -PbuildxOptions='--platform linux/arm64,linux/amd64 --target runner-distroless --push'
+
+Or similarly, without using gradle:
+
+    docker buildx build -f Dockerfile -t docker.io/michaelburman290/cassandra-sidecar:analytics-distroless --target runner-distroless --platform linux/amd64,linux/arm64 . --push
 
 ## Project Layout
 
