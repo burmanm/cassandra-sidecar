@@ -17,6 +17,7 @@
  */
 
 import java.nio.file.Paths
+import org.apache.tools.ant.types.Commandline
 
 buildscript {
     dependencies {
@@ -34,8 +35,6 @@ plugins {
     id('java-test-fixtures')
     // and is published
     id('maven-publish')
-    // and produces a docker image
-    id('com.google.cloud.tools.jib') version '3.4.4'
     // and generates an openAPI specification
     id('io.smallrye.openapi') version "${smallryeOpenApiVersion}"
 }
@@ -260,13 +259,21 @@ tasks.register("containerTest", Test) {
     finalizedBy jacocoTestReport // report is always generated after tests run
 }
 
-jib {
-    from {
-        image = 'gcr.io/distroless/java11-debian11@sha256:56ffee16297ae1d3484bd47575cacd8102e5ba2be425a7772b3f8ad0d48def3b'
-    }
-    to {
-        image = "cassandra-sidecar:${project.version}"
-    }
+tasks.register('buildDocker', Exec) {
+    description = 'Builds the Sidecar Docker image.'
+
+    def rawBuildxOptions = rootProject.ext.propertyWithDefault('buildxOptions', '')
+    def buildxOptions = rawBuildxOptions ? Commandline.translateCommandline(rawBuildxOptions).toList() : []
+    def version = rootProject.ext.propertyWithDefault('VERSION', project.version)
+    def imageName = rootProject.ext.propertyWithDefault('dockerImage', "cassandra-sidecar:${version}")
+
+    workingDir = rootProject.projectDir
+    commandLine(['docker', 'buildx', 'build'] +
+                buildxOptions +
+                ['--build-arg', "VERSION=${version}",
+                 '-t', imageName,
+                 '-f', rootProject.file('Dockerfile').absolutePath,
+                 '.'])
 }
 
 spotbugsTest.enabled = false
@@ -278,4 +285,3 @@ check.dependsOn containerTest, integrationTest, jacocoTestReport
 
 // Ensure the OpenAPI spec is generated before building the JAR
 processResources.dependsOn generateOpenApiSpec
-
