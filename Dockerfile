@@ -53,6 +53,8 @@ RUN mkdir -p ${SIDECAR_HOME}/logs
 ENV JVM_OPTS="-Dsidecar.logdir=${SIDECAR_LOGS} -Dsidecar.config=file://${SIDECAR_CONF}/sidecar.yaml -Dlogback.configurationFile=file://${SIDECAR_HOME}/conf/logback.xml -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
 ENV CASSANDRA_SIDECAR_OPTS="${JVM_OPTS}"
 
+EXPOSE 9043
+
 ENTRYPOINT ["/opt/cassandra-sidecar/bin/cassandra-sidecar"]
 
 FROM ${DISTROLESS_RUNNER_IMAGE} AS runner-distroless
@@ -68,5 +70,7 @@ COPY --from=builder /tmp/sidecar-dist/app/ ${SIDECAR_HOME}/
 
 ENV JVM_OPTS="-Dsidecar.logdir=${SIDECAR_LOGS} -Dsidecar.config=file://${SIDECAR_CONF}/sidecar.yaml -Dlogback.configurationFile=file://${SIDECAR_HOME}/conf/logback.xml -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
 ENV CASSANDRA_SIDECAR_OPTS="${JVM_OPTS}"
+
+EXPOSE 9043
 
 ENTRYPOINT ["/opt/cassandra-sidecar/bin/cassandra-sidecar"]

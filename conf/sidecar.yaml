@@ -241,13 +241,13 @@ ssl:
     - TLSv1.3
   cipher_suites: []
   keystore:
-    type: JKS
-    path: "/management-api-certs-ks/keystore.jks"
+    type: PKCS12
+    path: "/management-api-certs/keystore.p12"
     password: changeit
     check_interval: 5m
   truststore:
-    type: JKS
-    path: "/management-api-certs-ks/truststore.jks"
+    type: PKCS12
+    path: "/management-api-certs/truststore.p12"
     password: changeit
 
 # To enable access control, the role used by sidecar to talk to Cassandra must be granted following permissions
