@@ -65,6 +65,7 @@ public class SimpleCassandraVersion implements Comparable<SimpleCassandraVersion
     public static SimpleCassandraVersion create(String version) throws IllegalArgumentException
     {
         String stripped = version.toUpperCase().replace(SNAPSHOT, "");
+        stripped = stripped.substring(0, stripped.lastIndexOf("."));
         Matcher matcher = PATTERN.matcher(stripped);
         if (!matcher.matches())
             throw new IllegalArgumentException("Invalid Cassandra version value: " + version);

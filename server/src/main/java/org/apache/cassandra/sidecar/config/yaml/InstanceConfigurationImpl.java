@@ -78,7 +78,7 @@ public class InstanceConfigurationImpl implements InstanceConfiguration
                                      @Nullable @JsonProperty("lifecycle_options") Map<String, String> lifecycleOptions)
     {
         this.id = id;
-        this.host = host;
+        this.host = EnvironmentVariableResolver.resolve(host, "cassandra_instances.host");
         this.port = port;
         this.storagePort = storagePort != null ? storagePort : DEFAULT_STORAGE_PORT;
         this.storageDir = storageDir;

@@ -155,9 +155,9 @@ public class ApiModule extends AbstractModule
         return VertxRoute.create(router -> {
             router.route()
                   .order(RoutingOrder.HIGHEST.order)
-                  .handler(loggerHandler)
                   .handler(TimeoutHandler.create(sidecarConfiguration.serviceConfiguration().requestTimeout().toMillis(),
                                                  HttpResponseStatus.REQUEST_TIMEOUT.code()))
+                  .handler(loggerHandler)
                   .handler(endpointAccessControlHandler);
         });
     }

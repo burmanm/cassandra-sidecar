@@ -262,10 +262,14 @@ tasks.register('buildDocker', Exec) {
     def buildxOptions = rawBuildxOptions ? Commandline.translateCommandline(rawBuildxOptions).toList() : []
     def version = rootProject.ext.propertyWithDefault('VERSION', project.version)
     def imageName = rootProject.ext.propertyWithDefault('dockerImage', "cassandra-sidecar:${version}")
+    def dockerTarget = rootProject.ext.propertyWithDefault('docker_target', 'runner')
+    def hasExplicitTarget = buildxOptions.contains('--target')
+                         || buildxOptions.any { it.startsWith('--target=') }
 
     workingDir = rootProject.projectDir
     commandLine(['docker', 'buildx', 'build'] +
                 buildxOptions +
+                (hasExplicitTarget ? [] : ['--target', dockerTarget]) +
                 ['--build-arg', "VERSION=${version}",
                  '-t', imageName,
                  '-f', rootProject.file('Dockerfile').absolutePath,

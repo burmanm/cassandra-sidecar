@@ -36,8 +36,7 @@ import org.apache.cassandra.sidecar.routes.AnalyticsEndpointWhitelist;
 public class EndpointAccessControlHandler implements Handler<RoutingContext>
 {
     private static final String FORBIDDEN_MESSAGE =
-    "This endpoint is not accessible in analytics mode. " +
-    "Please contact your administrator if you need access to this endpoint.";
+    "This endpoint is not accessible in analytics mode. ";
 
     private final EndpointAccessMode endpointAccessMode;
     private final Set<String> analyticsEndpoints;

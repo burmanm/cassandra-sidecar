@@ -21,7 +21,7 @@
 #
 cassandra_instances:
   - id: 1
-    host: localhost
+    host: ${POD_IP}
     port: 9042
 
     # The storage port used for inter-node communication between Cassandra nodes in a cluster.
@@ -90,7 +90,7 @@ sidecar:
   # DnsResolver to use (org.apache.cassandra.sidecar.common.server.dns.DnsResolver). Currently supported
   # values are 'default' and 'resolve_to_ip'. Default will resolve hostnames to addresses and addresses to
   # hostnames whereas resolve_to_ip will only resolve hostnames to addresses.
-  dns_resolver: default
+  dns_resolver: resolve_to_ip
   # Endpoint access mode controls which endpoints are accessible. Valid values are:
   #   - full: All endpoints are accessible (default for backward compatibility)
   #   - analytics: Only analytics-library required endpoints are accessible
@@ -183,7 +183,7 @@ sidecar:
       #                                                       keyspace.
       electorate_membership_strategy: MostReplicatedKeyspaceTokenZeroElectorateMembership
       # Whether the process is enabled
-      enabled: true
+      enabled: false
       # The initial delay for the first execution of the cluster lease claim process task after being
       # scheduled or rescheduled.
       # The minimum value for the initial delay is 0ms.
@@ -338,7 +338,7 @@ access_control:
 
 driver_parameters:
   contact_points:
-    - "127.0.0.1:9042"
+    - "${POD_IP}:9042"
   auth_provider:
     class_name: org.apache.cassandra.sidecar.cluster.auth.FileProvider
     parameters:

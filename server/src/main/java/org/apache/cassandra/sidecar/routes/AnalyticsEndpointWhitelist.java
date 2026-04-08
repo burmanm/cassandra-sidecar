@@ -79,6 +79,10 @@ public final class AnalyticsEndpointWhitelist
         // Upload session cleanup
         endpoints.add("DELETE:" + ApiEndpointsV1.SSTABLE_CLEANUP_ROUTE);
 
+        // Additional ones..
+        endpoints.add("GET:" + ApiEndpointsV1.KEYSPACE_TOKEN_MAPPING_ROUTE);
+        endpoints.add("GET:" + ApiEndpointsV1.TIME_SKEW_ROUTE);
+
         ANALYTICS_ENDPOINTS = Collections.unmodifiableSet(endpoints);
     }
 

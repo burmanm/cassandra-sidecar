@@ -28,11 +28,29 @@ COPY --chown=gradle:gradle . .
 
 RUN gradle --no-daemon distTar \
  && mkdir -p /tmp/sidecar-dist \
- && DIST_ARCHIVE="$(find build/distributions -maxdepth 1 -type f -name 'apache-cassandra-sidecar-*.tar.gz' | head -n1)" \
+ && DIST_ARCHIVE="$(find build/distributions -maxdepth 1 -type f \( -name 'apache-cassandra-sidecar-*.tar.gz' -o -name 'apache-cassandra-sidecar-*.tar' \) ! -name '*-src.tar.gz' ! -name '*-src.tar' -exec ls -1t {} + | head -n1)" \
  && test -n "${DIST_ARCHIVE}" \
  && tar -xf "${DIST_ARCHIVE}" -C /tmp/sidecar-dist \
  && mv /tmp/sidecar-dist/apache-cassandra-sidecar-* /tmp/sidecar-dist/app \
  && mkdir -p /tmp/sidecar-dist/app/logs
+
+FROM ${DISTROLESS_RUNNER_IMAGE} AS runner-distroless
+ARG VERSION
+LABEL org.opencontainers.image.version="${VERSION}"
+
+ENV SIDECAR_HOME=/opt/cassandra-sidecar
+ENV SIDECAR_LOGS=${SIDECAR_HOME}/logs
+ENV SIDECAR_CONF=${SIDECAR_HOME}/conf
+WORKDIR ${SIDECAR_HOME}
+
+COPY --from=builder /tmp/sidecar-dist/app/ ${SIDECAR_HOME}/
+
+ENV JVM_OPTS="-Dsidecar.logdir=${SIDECAR_LOGS} -Dsidecar.config=file://${SIDECAR_CONF}/sidecar.yaml -Dlogback.configurationFile=file://${SIDECAR_CONF}/logback.xml -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
+ENV CASSANDRA_SIDECAR_OPTS="${JVM_OPTS}"
+
+EXPOSE 9043
+
+ENTRYPOINT ["/opt/cassandra-sidecar/bin/cassandra-sidecar"]
 
 FROM ${RUNNER_IMAGE} AS runner
 ARG VERSION
@@ -50,25 +68,7 @@ COPY --from=builder /tmp/sidecar-dist/app/ ${SIDECAR_HOME}/
 
 RUN mkdir -p ${SIDECAR_HOME}/logs
 
-ENV JVM_OPTS="-Dsidecar.logdir=${SIDECAR_LOGS} -Dsidecar.config=file://${SIDECAR_CONF}/sidecar.yaml -Dlogback.configurationFile=file://${SIDECAR_HOME}/conf/logback.xml -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
-ENV CASSANDRA_SIDECAR_OPTS="${JVM_OPTS}"
-
-EXPOSE 9043
-
-ENTRYPOINT ["/opt/cassandra-sidecar/bin/cassandra-sidecar"]
-
-FROM ${DISTROLESS_RUNNER_IMAGE} AS runner-distroless
-ARG VERSION
-LABEL org.opencontainers.image.version="${VERSION}"
-
-ENV SIDECAR_HOME=/opt/cassandra-sidecar
-ENV SIDECAR_LOGS=${SIDECAR_HOME}/logs
-ENV SIDECAR_CONF=${SIDECAR_HOME}/conf
-WORKDIR ${SIDECAR_HOME}
-
-COPY --from=builder /tmp/sidecar-dist/app/ ${SIDECAR_HOME}/
-
-ENV JVM_OPTS="-Dsidecar.logdir=${SIDECAR_LOGS} -Dsidecar.config=file://${SIDECAR_CONF}/sidecar.yaml -Dlogback.configurationFile=file://${SIDECAR_HOME}/conf/logback.xml -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
+ENV JVM_OPTS="-Dsidecar.logdir=${SIDECAR_LOGS} -Dsidecar.config=file://${SIDECAR_CONF}/sidecar.yaml -Dlogback.configurationFile=file://${SIDECAR_CONF}/logback.xml -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
 ENV CASSANDRA_SIDECAR_OPTS="${JVM_OPTS}"
 
 EXPOSE 9043

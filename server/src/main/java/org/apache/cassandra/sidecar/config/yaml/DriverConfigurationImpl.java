@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.cassandra.sidecar.common.DataObjectBuilder;
 import org.apache.cassandra.sidecar.common.server.utils.SecondBoundConfiguration;
 import org.apache.cassandra.sidecar.config.DriverConfiguration;
@@ -38,6 +39,7 @@ public class DriverConfigurationImpl implements DriverConfiguration
     private static final SecondBoundConfiguration DEFAULT_UNSUPPORTED_TABLE_SCHEMA_REFRESH_TIME = new SecondBoundConfiguration(5, TimeUnit.MINUTES);
 
     @JsonProperty("contact_points")
+    @JsonDeserialize(contentUsing = ContactPointDeserializer.class)
     private final List<InetSocketAddress> contactPoints;
 
     @JsonProperty("local_dc")
