@@ -69,7 +69,7 @@ public enum DnsResolvers implements DnsResolver
     },
 
     @JsonProperty("default_filter")
-    RESOLVE_EXCLUDE_DEFAULT_IP
+    DEFAULT_FILTER
     {
         /**
          * Returns the hostAddress for the provided address
@@ -84,12 +84,12 @@ public enum DnsResolvers implements DnsResolver
             String podName = System.getenv("POD_NAME");
             if(podName != null && podName.length() > 0) {
                 for (InetAddress inetAddress : InetAddress.getAllByName(address)) {
-                    if(inetAddress.getHostAddress().startsWith(podName)) {
-                        return inetAddress.getHostAddress();
+                    if(inetAddress.getHostName().startsWith(podName)) {
+                        return inetAddress.getHostName();
                     }
                 }
             }
-            return InetAddress.getByName(address).getHostAddress();
+            return InetAddress.getByName(address).getHostName();
         }
     };
 
