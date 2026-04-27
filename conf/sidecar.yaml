@@ -90,7 +90,8 @@ sidecar:
   # DnsResolver to use (org.apache.cassandra.sidecar.common.server.dns.DnsResolver). Currently supported
   # values are 'default' and 'resolve_to_ip'. Default will resolve hostnames to addresses and addresses to
   # hostnames whereas resolve_to_ip will only resolve hostnames to addresses.
-  dns_resolver: resolve_to_ip
+  #  dns_resolver: resolve_to_ip
+  dns_resolver: default_filter
   # Endpoint access mode controls which endpoints are accessible. Valid values are:
   #   - full: All endpoints are accessible (default for backward compatibility)
   #   - analytics: Only analytics-library required endpoints are accessible

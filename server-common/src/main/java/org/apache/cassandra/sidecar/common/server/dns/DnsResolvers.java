@@ -66,6 +66,31 @@ public enum DnsResolvers implements DnsResolver
         {
             return InetAddress.getByName(address).getHostAddress();
         }
+    },
+
+    @JsonProperty("default_filter")
+    RESOLVE_EXCLUDE_DEFAULT_IP
+    {
+        /**
+         * Returns the hostAddress for the provided address
+         *
+         * @param address IP address
+         * @return IP address
+         * @throws UnknownHostException when the host is not known
+         */
+        @Override
+        public String reverseResolve(String address) throws UnknownHostException
+        {
+            String podName = System.getenv("POD_NAME");
+            if(podName != null && podName.length() > 0) {
+                for (InetAddress inetAddress : InetAddress.getAllByName(address)) {
+                    if(inetAddress.getHostAddress().startsWith(podName)) {
+                        return inetAddress.getHostAddress();
+                    }
+                }
+            }
+            return InetAddress.getByName(address).getHostAddress();
+        }
     };
 
     /**
