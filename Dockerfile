@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-ARG BUILDER_IMAGE=gradle:8.12.1-jdk17
+ARG BUILDER_IMAGE=gradle:8-jdk17-ubi
 ARG RUNNER_IMAGE=registry.access.redhat.com/ubi9/ubi-minimal:latest
 ARG DISTROLESS_RUNNER_IMAGE=gcr.io/distroless/java17-debian13:nonroot
 ARG VERSION=dev
@@ -33,6 +33,22 @@ RUN gradle --no-daemon distTar \
  && tar -xf "${DIST_ARCHIVE}" -C /tmp/sidecar-dist \
  && mv /tmp/sidecar-dist/apache-cassandra-sidecar-* /tmp/sidecar-dist/app \
  && mkdir -p /tmp/sidecar-dist/app/logs
+
+FROM alpine:3.22 AS k8ssandra-client-release
+ARG TARGETARCH
+
+WORKDIR /download
+
+RUN apk add --no-cache ca-certificates curl \
+ && curl -fsSLO https://github.com/k8ssandra/k8ssandra-client/releases/latest/download/checksums.txt \
+ && CLIENT_ARCHIVE="$(awk -v arch="${TARGETARCH}" '$2 ~ ("^k8ssandra-client_.*_linux_" arch "\\.tar\\.gz$") { print $2 }' checksums.txt)" \
+ && test -n "${CLIENT_ARCHIVE}" \
+ && curl -fsSLO "https://github.com/k8ssandra/k8ssandra-client/releases/latest/download/${CLIENT_ARCHIVE}" \
+ && awk -v archive="${CLIENT_ARCHIVE}" '$2 == archive { print }' checksums.txt > selected-checksum.txt \
+ && test -s selected-checksum.txt \
+ && sha256sum -c selected-checksum.txt \
+ && tar -xzf "${CLIENT_ARCHIVE}" kubectl-k8ssandra LICENSE \
+ && chmod 0755 kubectl-k8ssandra
 
 FROM ${DISTROLESS_RUNNER_IMAGE} AS runner-distroless
 ARG VERSION
@@ -61,16 +77,20 @@ RUN microdnf install -y java-17-openjdk-headless \
 
 ENV SIDECAR_HOME=/opt/cassandra-sidecar
 ENV SIDECAR_LOGS=${SIDECAR_HOME}/logs
-ENV SIDECAR_CONF=${SIDECAR_HOME}/conf
+ENV SIDECAR_CONFIG_INPUT_DIR=${SIDECAR_HOME}/conf
+ENV SIDECAR_CONF=${SIDECAR_HOME}/config
 WORKDIR ${SIDECAR_HOME}
 
 COPY --from=builder /tmp/sidecar-dist/app/ ${SIDECAR_HOME}/
+COPY --from=k8ssandra-client-release --chmod=755 /download/kubectl-k8ssandra ${SIDECAR_HOME}/bin/k8ssandra
+COPY --from=k8ssandra-client-release /download/LICENSE ${SIDECAR_HOME}/LICENSE-k8ssandra-client
+COPY --chmod=755 docker/entrypoint.sh ${SIDECAR_HOME}/bin/docker-entrypoint.sh
 
-RUN mkdir -p ${SIDECAR_HOME}/logs
+RUN mkdir -p ${SIDECAR_HOME}/logs ${SIDECAR_CONF}
 
-ENV JVM_OPTS="-Dsidecar.logdir=${SIDECAR_LOGS} -Dsidecar.config=file://${SIDECAR_CONF}/sidecar.yaml -Dlogback.configurationFile=file://${SIDECAR_CONF}/logback.xml -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
+ENV JVM_OPTS="-Dsidecar.logdir=${SIDECAR_LOGS} -Dsidecar.config=file://${SIDECAR_CONF}/sidecar.yaml -Dlogback.configurationFile=file://${SIDECAR_CONFIG_INPUT_DIR}/logback.xml -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
 ENV CASSANDRA_SIDECAR_OPTS="${JVM_OPTS}"
 
 EXPOSE 9043
 
-ENTRYPOINT ["/opt/cassandra-sidecar/bin/cassandra-sidecar"]
+ENTRYPOINT ["/opt/cassandra-sidecar/bin/docker-entrypoint.sh"]
