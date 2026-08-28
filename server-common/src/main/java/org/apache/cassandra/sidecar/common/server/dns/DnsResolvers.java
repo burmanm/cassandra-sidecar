@@ -75,23 +75,24 @@ public enum DnsResolvers implements DnsResolver
          * Returns the hostAddress for the provided address
          *
          * @param address IP address
-         * @return IP address
-         * @throws UnknownHostException when the host is not known
+         * @return hostname matching the service
+         * @throws UnknownHostException when the host is not known or no PTR record matches the configured suffix
          */
         @Override
         public String reverseResolve(String address) throws UnknownHostException
         {
-            String podName = System.getenv("POD_NAME");
-            if(podName != null && podName.length() > 0) {
-                for (InetAddress inetAddress : InetAddress.getAllByName(address)) {
-                    if(inetAddress.getHostName().startsWith(podName)) {
-                        return inetAddress.getHostName();
-                    }
-                }
-            }
-            return InetAddress.getByName(address).getHostName();
+            return DefaultFilterResolverHolder.INSTANCE.reverseResolve(address);
         }
     };
+
+    private static final String SERVICE_NAME_ENV = "SERVICE_NAME";
+
+    // This is necessary due to the unfortunate EventLoop we need
+    private static class DefaultFilterResolverHolder
+    {
+        private static final NettyReverseDnsResolver INSTANCE =
+        NettyReverseDnsResolver.create(System.getenv(SERVICE_NAME_ENV));
+    }
 
     /**
      * {@inheritDoc}
