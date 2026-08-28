@@ -43,8 +43,8 @@ plugins {
     id "com.github.spotbugs" version "6.0.20" apply false
 
     // https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki
-    id "com.netflix.nebula.ospackage" version "11.10.0"
-    id 'com.netflix.nebula.ospackage-application' version "11.10.0"
+    id "com.netflix.nebula.ospackage" version "11.11.2"
+    id 'com.netflix.nebula.ospackage-application' version "11.11.2"
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
 
     // Release Audit Tool (RAT) plugin for checking project licenses
