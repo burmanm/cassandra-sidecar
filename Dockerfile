@@ -34,7 +34,7 @@ RUN gradle --no-daemon distTar \
  && mv /tmp/sidecar-dist/apache-cassandra-sidecar-* /tmp/sidecar-dist/app \
  && mkdir -p /tmp/sidecar-dist/app/logs
 
-FROM alpine:3.22 AS k8ssandra-client-release
+FROM alpine:3.24 AS k8ssandra-client-release
 ARG TARGETARCH
 
 WORKDIR /download
@@ -88,7 +88,7 @@ COPY --chmod=755 docker/entrypoint.sh ${SIDECAR_HOME}/bin/docker-entrypoint.sh
 
 RUN mkdir -p ${SIDECAR_HOME}/logs ${SIDECAR_CONF}
 
-ENV JVM_OPTS="-Dsidecar.logdir=${SIDECAR_LOGS} -Dsidecar.config=file://${SIDECAR_CONF}/sidecar.yaml -Dlogback.configurationFile=file://${SIDECAR_CONFIG_INPUT_DIR}/logback.xml -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
+ENV JVM_OPTS="-Dsidecar.logdir=${SIDECAR_LOGS} -Dsidecar.config=file://${SIDECAR_CONF}/sidecar.yaml -Dlogback.configurationFile=file://${SIDECAR_CONF}/logback.xml -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
 ENV CASSANDRA_SIDECAR_OPTS="${JVM_OPTS}"
 
 EXPOSE 9043

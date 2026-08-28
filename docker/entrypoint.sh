@@ -19,6 +19,14 @@
 
 set -eu
 
+mkdir -p "${SIDECAR_CONF}"
+
+for input_config in "${SIDECAR_CONFIG_INPUT_DIR}"/*; do
+    if [ -f "${input_config}" ] && [ "${input_config##*/}" != "sidecar.yaml" ]; then
+        cp "${input_config}" "${SIDECAR_CONF}/"
+    fi
+done
+
 "${SIDECAR_HOME}/bin/k8ssandra" config build \
     --sidecar \
     --input="${SIDECAR_CONFIG_INPUT_DIR}" \
