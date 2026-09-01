@@ -19,19 +19,13 @@ jobs:
         with:
           username: iamapikey
           password: ${{ secrets.MC_ICR_IO_API_KEY }}
-          registry: preprod.icr.io
-#      - id: docker-login-icr
-#        uses: docker/login-action@v4.6.0
-#        with:
-#          username: cp
-#          password: ${{ secrets.ICR_PREPROD_ENTITLEMENT_KEY }}
-#          registry: preprod.icr.io
+          registry: icr.io
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
-            preprod.icr.io/cp/cpd/ibm-datastax-hcd/cassandra-sidecar
+            icr.io/ds-mission-control-staging/cassandra-sidecar
           tags: |
             type=sha,format=short,prefix=
       - name: Build cassandra-sidecar
