@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [ analytics_fork ]
 
-# Fixed values that do not vary per environment.
 env:
   MEND_PROJECTNAME: "Cassandra Sidecar"
   MEND_URL: "https://ibmets.whitesourcesoftware.com"
@@ -15,19 +14,18 @@ env:
 jobs:
   mend-cli-scan:
     runs-on: ubuntu-latest
+    continue-on-error: true  # red on findings, but never blocks PRs or releases
     steps:
       - name: Git checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      # Download the Mend CLI binary for Linux/amd64.
       - name: Download Mend CLI
         run: |
           curl https://downloads.mend.io/cli/linux_amd64/mend -o ./mend
           chmod +x ./mend
 
-      # Run the Mend dependency scan.
-      # Secrets are injected as env vars scoped to this step only.
-      - name: Run Mend dep scan
+      - name: Run Mend dep scan (release — update platform)
+        if: github.event_name == 'push'
         env:
           MEND_USER_KEY: ${{ secrets.MEND_USER_KEY }}
           MEND_PRODUCTNAME: ${{ secrets.MEND_PRODUCTNAME }}
@@ -37,9 +35,35 @@ jobs:
           ./mend dep --dir . \
             --scope "$MEND_ORGNAME//$MEND_PRODUCTNAME//$MEND_PROJECTNAME" \
             --export-results "$MEND_REPORT" \
-            --update
+            --non-interactive \
+            --update 2>&1 | tee mend-output.txt
 
-      # Upload the exported report so it is accessible from the workflow run.
+      - name: Run Mend dep scan (non-release — report only)
+        if: github.event_name == 'pull_request'
+        env:
+          MEND_USER_KEY: ${{ secrets.MEND_USER_KEY }}
+          MEND_PRODUCTNAME: ${{ secrets.MEND_PRODUCTNAME }}
+          MEND_ORGNAME: Products
+          MEND_EMAIL: ${{ secrets.MEND_EMAIL }}
+        run: |
+          ./mend dep --dir . \
+            --scope "$MEND_ORGNAME//$MEND_PRODUCTNAME//$MEND_PROJECTNAME" \
+            --export-results "$MEND_REPORT" \
+            --non-interactive 2>&1 | tee mend-output.txt
+
+      # Mend CLI exits 0 on findings; parse stdout and fail the job on Critical/High.
+      - name: Fail on Critical/High findings
+        if: always()
+        run: |
+          [ -f mend-output.txt ] || { echo "::warning::Mend scan output not found."; exit 0; }
+          summary=$(grep 'Detected .* vulnerabilities' mend-output.txt || true)
+          critical=$(echo "$summary" | sed 's/.*(\([0-9]*\) Critical.*/\1/' | grep -E '^[0-9]+$' || echo 0)
+          high=$(echo "$summary"     | sed 's/.*(\([0-9]* Critical, \)\([0-9]*\) High.*/\2/' | grep -E '^[0-9]+$' || echo 0)
+          if [ "$((${critical:-0} + ${high:-0}))" -gt 0 ]; then
+            echo "::error::Mend SCA: ${critical:-0} Critical, ${high:-0} High — see mend-scan-report artifact."
+            exit 1
+          fi
+
       - name: Upload Mend scan report
         if: always()
         uses: actions/upload-artifact@v4
