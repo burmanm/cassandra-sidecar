@@ -7,7 +7,7 @@ on:
     branches: [ analytics_fork ]
 
 env:
-  MEND_PROJECTNAME: "Cassandra Sidecar"
+  MEND_PROJECTNAME: "Mission Control"
   MEND_URL: "https://ibmets.whitesourcesoftware.com"
   MEND_REPORT: "mend-results.json"
 
@@ -31,9 +31,10 @@ jobs:
           MEND_PRODUCTNAME: ${{ secrets.MEND_PRODUCTNAME }}
           MEND_ORGNAME: Products
           MEND_EMAIL: ${{ secrets.MEND_EMAIL }}
+          MEND_REPO: ${{ github.event.repository.name }}
         run: |
           ./mend dep --dir . \
-            --scope "$MEND_ORGNAME//$MEND_PRODUCTNAME//$MEND_PROJECTNAME" \
+            --scope "$MEND_ORGNAME//$MEND_PRODUCTNAME//$MEND_PROJECTNAME - $MEND_REPO" \
             --export-results "$MEND_REPORT" \
             --non-interactive \
             --update 2>&1 | tee mend-output.txt
@@ -45,9 +46,10 @@ jobs:
           MEND_PRODUCTNAME: ${{ secrets.MEND_PRODUCTNAME }}
           MEND_ORGNAME: Products
           MEND_EMAIL: ${{ secrets.MEND_EMAIL }}
+          MEND_REPO: ${{ github.event.repository.name }}
         run: |
           ./mend dep --dir . \
-            --scope "$MEND_ORGNAME//$MEND_PRODUCTNAME//$MEND_PROJECTNAME" \
+            --scope "$MEND_ORGNAME//$MEND_PRODUCTNAME//$MEND_PROJECTNAME - $MEND_REPO" \
             --export-results "$MEND_REPORT" \
             --non-interactive 2>&1 | tee mend-output.txt
 

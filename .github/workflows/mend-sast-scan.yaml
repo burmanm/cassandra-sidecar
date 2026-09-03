@@ -8,7 +8,7 @@ on:
 
 # Fixed values that do not vary per environment.
 env:
-  MEND_PROJECTNAME: "Cassandra Sidecar"
+  MEND_PROJECTNAME: "Mission Control"
   MEND_URL: "https://ibmets.whitesourcesoftware.com"
   MEND_REPORT: "mend-results.json"
 
@@ -33,9 +33,10 @@ jobs:
           MEND_PRODUCTNAME: ${{ secrets.MEND_PRODUCTNAME }}
           MEND_ORGNAME: Products
           MEND_EMAIL: ${{ secrets.MEND_EMAIL }}
+          MEND_REPO: ${{ github.event.repository.name }}
         run: |
           ./mend sast --dir . \
-            --scope "$MEND_ORGNAME//$MEND_PRODUCTNAME//$MEND_PROJECTNAME"
+            --scope "$MEND_ORGNAME//$MEND_PRODUCTNAME//$MEND_PROJECTNAME - $MEND_REPO"
 
       # Upload the exported report so it is accessible from the workflow run.
       - name: Upload Mend scan report
